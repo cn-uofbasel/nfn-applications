@@ -32,6 +32,13 @@ class NestedTest(Test):
         self.network.nodes[0].send_interest(basename + "/NFN")
 
 
+class FetchServiceTest(Test):
+    def setup(self):
+        self.network = SimpleNetwork(4)
+        name = "/node4/nfn_service_NBody_SimulationService/NFN"
+        self.network.nodes[0].send_interest(name)
+
+
 class NBodyTest(Test):
     def setup(self):
         self.network = ThesisNetwork()
@@ -63,7 +70,8 @@ Util.compile_nfn_scala()
 # EchoTest().start()
 # SimpleTest().start()
 # NestedTest().start()
-NBodyTest().start()
+FetchServiceTest().start()
+# NBodyTest().start()
 
 
 
