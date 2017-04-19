@@ -34,9 +34,13 @@ class NestedTest(Test):
 
 class NBodyTest(Test):
     def setup(self):
-        self.network = ForkNetwork(stem_length=3, branch_count=3, branch_length=3)
-        basename = "/nodeAS/nfn_service_NBody_SimulationService/(@x call 1 x)"
-        self.network.nodes[0].send_interest(basename + "/NFN", on_data=self.on_sim_data)
+        self.network = ThesisNetwork()
+        # basename = "call 2 %2Fnode4%2Fnfn_service_Echo (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService)"
+        basename = "/node4/nfn_service_Echo/(@x call 2 x (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService))"
+        self.network.nodes[0].send_interest(basename + "/NFN")
+        # self.network = ForkNetwork(stem_length=3, branch_count=3, branch_length=3)
+        # basename = "/nodeAS/nfn_service_NBody_SimulationService/(@x call 1 x)"
+        # self.network.nodes[0].send_interest(basename + "/NFN", on_data=self.on_sim_data)
 
     def on_sim_data(self, interest, data):
         content = urllib.parse.unquote(data.getContent().toRawStr())
@@ -52,16 +56,19 @@ class NBodyTest(Test):
 
 
 
-Util.compile_ccnl()
+Util.compile_ccn_lite()
+Util.compile_nfn_scala()
 
 # StopTest().start()
 # EchoTest().start()
 # SimpleTest().start()
-NestedTest().start()
-# NBodyTest().start()
+# NestedTest().start()
+NBodyTest().start()
 
 
 
-Util.clean_output_folder()
+# Util.clean_output_folder()
+
+
 
 

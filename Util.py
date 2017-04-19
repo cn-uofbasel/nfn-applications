@@ -4,12 +4,30 @@ import os
 
 class Util(object):
     @staticmethod
-    def compile_ccnl(clean=False):
-        src = os.path.expandvars("$CCNL_HOME/src")
+    def compile_ccn_lite(clean=False):
+        print("")
+        wd = "$CCNL_HOME/src"
+        src = os.path.expandvars(wd)
+        if src == wd or not src:
+            print("$CCNL_HOME not set!")
+            return
         print("Compiling ccn-lite.")
         cmd = "make clean all" if clean else "make all"
         call(cmd.split(" "), cwd=src)
-        print("Done.\n")
+        print("Done.")
+
+    @staticmethod
+    def compile_nfn_scala(clean=False):
+        print("")
+        wd = "$NFNSCALA_HOME"
+        src = os.path.expandvars(wd)
+        if src == wd or not src:
+            print("$NFNSCALA_HOME not set!")
+            return
+        print("Compiling nfn-scala.")
+        cmd = "sbt clean compile" if clean else "sbt compile"
+        call(cmd.split(" "), cwd=src)
+        print("Done.")
 
     @staticmethod
     def clean_output_folder():

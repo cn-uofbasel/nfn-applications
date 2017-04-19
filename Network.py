@@ -51,8 +51,8 @@ class ThesisNetwork(Network):
         for i in range(0, n - 1):
             self.nodes[i].add_forwarding_rule("/node" + str(n), self.nodes[i + 1])
 
-        self.compute_servers.append(ComputeServer(port=9994, node=self.nodes[n - 1], launch=True))
-        self.compute_servers.append(ComputeServer(port=9996, node=self.nodes[s - 1], launch=True))
+        self.compute_servers.append(ComputeServer(port=9994, node=self.nodes[s - 1], launch=True))
+        self.compute_servers.append(ComputeServer(port=9996, node=self.nodes[n - 1], launch=True))
         print("Waiting for compute server to launch.")
         time.sleep(15)
         print("")

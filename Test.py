@@ -48,7 +48,7 @@ class Test(object):
 
     def start(self):
         try:
-            print("Test started (" + self.name + ")\n"
+            print("\nTest started (" + self.name + ")\n"
                                                  "")
             self.setup()
             self.loop.call_soon(self.process_events)
