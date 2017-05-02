@@ -1,6 +1,6 @@
 from subprocess import call
 import os
-
+import urllib
 
 class Util(object):
     @staticmethod
@@ -39,3 +39,16 @@ class Util(object):
                     os.unlink(path)
             except Exception as e:
                 print(e)
+
+    @staticmethod
+    def interest_to_string(interest):
+        uri = interest.getName().toUri()
+        cmps = uri.split("/")
+        last_component = cmps[-1]
+        is_segment = last_component.startswith("%00")
+        if is_segment:
+            cmps.pop()
+        string = urllib.parse.unquote("/".join(cmps))
+        if is_segment:
+            string += "/" + last_component
+        return string

@@ -12,12 +12,16 @@ class Test(object):
         self.name = name if name is not None else type(self).__name__
         self.network = network
         self.loop = asyncio.get_event_loop()
-        self.interval = 1
+        self.process_interval = 1
+        self.update_interval = 1
         self.result = None
         self.max_duration = 0
         self.timeout_handle = None
 
     def setup(self):
+        pass
+
+    def update(self):
         pass
 
     def on_succeed(self):
@@ -26,9 +30,13 @@ class Test(object):
     def on_fail(self):
         pass
 
+    def process_update(self):
+        self.update()
+        self.loop.call_later(self.update_interval, self.process_update)
+
     def process_events(self):
         self.network.process_events()
-        self.loop.call_later(self.interval, self.process_events)
+        self.loop.call_later(self.process_interval, self.process_events)
 
     def finish_with_result(self, result):
         if self.timeout_handle is not None:
@@ -52,6 +60,7 @@ class Test(object):
                                                  "")
             self.setup()
             self.loop.call_soon(self.process_events)
+            self.loop.call_later(self.update_interval, self.process_update)
             if self.max_duration > 0:
                 self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
             self.loop.run_forever()

@@ -1,8 +1,8 @@
 from Test import *
 from Network import *
-from Util import *
-import urllib
 
+from IntermediateTest import IntermediateTest
+from NBodyTest import NBodyTest
 
 class SimpleTest(Test):
     def setup(self):
@@ -35,44 +35,44 @@ class NestedTest(Test):
 class FetchServiceTest(Test):
     def setup(self):
         self.network = SimpleNetwork(4)
-        name = "/node4/nfn_service_NBody_SimulationService/NFN"
+        name = "/node4/nfn_service_NBody_SimulationService"
         self.network.nodes[0].send_interest(name)
 
 
-class NBodyTest(Test):
+class ChunkTest(Test):
+    def setup(self):
+        self.network = SimpleNetwork(4)
+        name = "/node4/nfn_service_ChunkTest/(@x call 1 x)/NFN"
+        self.network.nodes[0].send_interest(name)
+
+
+class ChainTest(Test):
     def setup(self):
         self.network = ThesisNetwork()
-        # basename = "call 2 %2Fnode4%2Fnfn_service_Echo (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService)"
+        name = "/node4/nfn_service_ChainIntermediates/(@x call 3 x '%2Fnode6%2Fnfn_service_IntermediateTest(@x call 1 x)' '%2Fnode6%2Fnfn_service_IntermediateTest(@x call 1 x)')/NFN"
+        self.network.nodes[0].send_interest(name)
+
+
+class SimulationTest(Test):
+    def setup(self):
+        self.network = ThesisNetwork()
         basename = "/node4/nfn_service_Echo/(@x call 2 x (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService))"
         self.network.nodes[0].send_interest(basename + "/NFN")
-        # self.network = ForkNetwork(stem_length=3, branch_count=3, branch_length=3)
-        # basename = "/nodeAS/nfn_service_NBody_SimulationService/(@x call 1 x)"
-        # self.network.nodes[0].send_interest(basename + "/NFN", on_data=self.on_sim_data)
-
-    def on_sim_data(self, interest, data):
-        content = urllib.parse.unquote(data.getContent().toRawStr())
-        print("Simulation data received.")
-        print(content)
-        echo = "/nodeBS/nfn_service_Echo/(@x call 2 x (call 1 %2FnodeAS%2Fnfn_service_NBody_SimulationService))"
-        self.network.nodes[0].send_interest(echo + "/NFN", on_data=self.on_render_data)
-
-    def on_render_data(self, interest, data):
-        content = urllib.parse.unquote(data.getContent().toRawStr())
-        print("Render data received.")
-        print(content)
 
 
 
-Util.compile_ccn_lite()
-Util.compile_nfn_scala()
+#Util.compile_ccn_lite()
+#Util.compile_nfn_scala()
 
 # StopTest().start()
 # EchoTest().start()
 # SimpleTest().start()
 # NestedTest().start()
-FetchServiceTest().start()
+# FetchServiceTest().start()
+# ChunkTest().start()
+ChainTest().start()
+# IntermediateTest().start()
 # NBodyTest().start()
-
 
 
 # Util.clean_output_folder()
