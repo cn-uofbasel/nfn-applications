@@ -54,7 +54,7 @@ class ThesisNetwork(Network):
         self.compute_servers.append(ComputeServer(port=9994, node=self.nodes[s - 1], launch=True))
         self.compute_servers.append(ComputeServer(port=9996, node=self.nodes[n - 1], launch=True))
         print("Waiting for compute server to launch.")
-        time.sleep(15)
+        time.sleep(20)
         print("")
 
 

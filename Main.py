@@ -3,6 +3,7 @@ from Network import *
 
 from IntermediateTest import IntermediateTest
 from NBodyTest import NBodyTest
+from SimulationRenderTest import SimulationRenderTest
 
 class SimpleTest(Test):
     def setup(self):
@@ -49,15 +50,20 @@ class ChunkTest(Test):
 class ChainTest(Test):
     def setup(self):
         self.network = ThesisNetwork()
-        name = "/node4/nfn_service_ChainIntermediates/(@x call 3 x '%2Fnode6%2Fnfn_service_IntermediateTest(@x call 1 x)' '%2Fnode6%2Fnfn_service_IntermediateTest(@x call 1 x)')/NFN"
+        nbody = "/node6/nfn_service_NBody_SimulationService/(@x call 1 x)/NFN"
+        render = "/node6/nfn_service_NBody_RenderService/(@x call 2 x ())/NFN"
+        nbody_escaped = nbody.replace("/", "%2F")
+        render_escaped = render.replace("/", "%2F")
+        name = "/node4/nfn_service_ChainIntermediates/(@x call 3 x '{0}' '{1}')/NFN".format(nbody_escaped, nbody_escaped)
         self.network.nodes[0].send_interest(name)
 
 
 class SimulationTest(Test):
     def setup(self):
         self.network = ThesisNetwork()
-        basename = "/node4/nfn_service_Echo/(@x call 2 x (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService))"
-        self.network.nodes[0].send_interest(basename + "/NFN")
+        name = "/node6/nfn_service_NBody_SimulationService/(@x call 1 x)/NFN"
+        # name = "/node4/nfn_service_Echo/(@x call 2 x (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService))"
+        self.network.nodes[0].send_interest(name)
 
 
 
@@ -70,10 +76,11 @@ class SimulationTest(Test):
 # NestedTest().start()
 # FetchServiceTest().start()
 # ChunkTest().start()
-ChainTest().start()
+# ChainTest().start()
+# SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
-
+SimulationRenderTest().start()
 
 # Util.clean_output_folder()
 

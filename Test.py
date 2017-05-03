@@ -17,6 +17,8 @@ class Test(object):
         self.result = None
         self.max_duration = 0
         self.timeout_handle = None
+        self.process_handle = None
+        self.update_handle = None
 
     def setup(self):
         pass
@@ -32,15 +34,19 @@ class Test(object):
 
     def process_update(self):
         self.update()
-        self.loop.call_later(self.update_interval, self.process_update)
+        self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
 
     def process_events(self):
         self.network.process_events()
-        self.loop.call_later(self.process_interval, self.process_events)
+        self.process_handle = self.loop.call_later(self.process_interval, self.process_events)
 
     def finish_with_result(self, result):
         if self.timeout_handle is not None:
             self.timeout_handle.cancel()
+        if self.process_handle is not None:
+            self.process_handle.cancel()
+        if self.update_handle is not None:
+            self.update_handle.cancel()
         self.loop.stop()
         self.result = result
         if result == TestResult.Success:
@@ -59,8 +65,8 @@ class Test(object):
             print("\nTest started (" + self.name + ")\n"
                                                  "")
             self.setup()
-            self.loop.call_soon(self.process_events)
-            self.loop.call_later(self.update_interval, self.process_update)
+            self.process_handle = self.loop.call_soon(self.process_events)
+            self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
             if self.max_duration > 0:
                 self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
             self.loop.run_forever()
