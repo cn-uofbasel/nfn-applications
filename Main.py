@@ -1,9 +1,12 @@
 from Test import *
+from TestSuite import *
 from Network import *
+from Util import *
 
 from IntermediateTest import IntermediateTest
 from NBodyTest import NBodyTest
 from SimulationRenderTest import SimulationRenderTest
+
 
 class SimpleTest(Test):
     def setup(self):
@@ -11,11 +14,27 @@ class SimpleTest(Test):
         self.network.nodes[0].send_interest("/node4/nfn_service_WordCount/(@x call 2 x 'foo bar')/NFN")
 
 
+class SerialTest(Test):
+    def setup(self):
+        self.network = SerialNetwork(6)
+        self.network.nodes[0].send_interest("/node6/nfn_service_WordCount/(@x call 2 x 'foo bar')/NFN", on_data=self.on_data)
+    def on_data(self, interest, data):
+        Util.log_on_data(interest, data)
+        result = TestResult.Success if int(data.getContent().toRawStr()) is 2 else TestResult.Failure
+        self.finish_with_result(result)
+
+
 class EchoTest(Test):
     def setup(self):
         self.network = SimpleNetwork(4)
         basename = "/node4/nfn_service_Echo/(@x call 2 x 'foo bar')"
         self.network.nodes[0].send_interest(basename + "/NFN")
+
+
+class FetchContentTest(Test):
+    def setup(self):
+        self.network = ThesisNetwork()
+        self.network.nodes[0].send_interest("/node4/nfn_service_FetchContentTest/(@x call 2 x 'foo bar')/NFN")
 
 
 class StopTest(Test):
@@ -67,12 +86,16 @@ class SimulationTest(Test):
 
 
 
-#Util.compile_ccn_lite()
-#Util.compile_nfn_scala()
+# Util.compile_ccn_lite()
+# Util.compile_nfn_scala()
+
+TestSuite([SerialTest()]).start()
 
 # StopTest().start()
 # EchoTest().start()
 # SimpleTest().start()
+# SerialTest().start()
+# FetchContentTest().start()
 # NestedTest().start()
 # FetchServiceTest().start()
 # ChunkTest().start()
@@ -80,7 +103,7 @@ class SimulationTest(Test):
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
-SimulationRenderTest().start()
+# SimulationRenderTest().start()
 
 # Util.clean_output_folder()
 

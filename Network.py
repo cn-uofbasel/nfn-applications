@@ -14,6 +14,12 @@ class Network(object):
         for cs in self.compute_servers:
             cs.process_events()
 
+    def shutdown(self):
+        for node in self.nodes:
+            node.shutdown()
+        for node in self.compute_servers:
+            node.shutdown()
+
 
 class SimpleNetwork(Network):
     def __init__(self, n):
@@ -30,7 +36,28 @@ class SimpleNetwork(Network):
 
         self.compute_servers.append(ComputeServer(port=9999, node=self.nodes[self.n-1], launch=True))
         print("Waiting for compute server to launch.")
-        time.sleep(10)
+        time.sleep(5)
+        print("")
+
+class SerialNetwork(Network):
+    def __init__(self, n):
+        super().__init__()
+        self.n = n
+        self.setup()
+
+    def setup(self):
+        for i in range(1, self.n + 1):
+            self.nodes.append(NFNNode(port=9000 + i, prefix='/node' + str(i), launch=True))
+
+        for i in range(0, self.n - 1):
+            for j in range(i + 1, self.n):
+                self.nodes[i].add_forwarding_rule("/node" + str(j + 1), self.nodes[i + 1])
+
+        for i in range(1, self.n + 1):
+            self.compute_servers.append(ComputeServer(port=9990 + i, node=self.nodes[i - 1], launch=True))
+
+        print("Waiting for compute servers to launch.")
+        time.sleep(5)
         print("")
 
 
@@ -54,7 +81,7 @@ class ThesisNetwork(Network):
         self.compute_servers.append(ComputeServer(port=9994, node=self.nodes[s - 1], launch=True))
         self.compute_servers.append(ComputeServer(port=9996, node=self.nodes[n - 1], launch=True))
         print("Waiting for compute server to launch.")
-        time.sleep(20)
+        time.sleep(5)
         print("")
 
 
@@ -104,5 +131,5 @@ class ForkNetwork(Network):
                     branch[0].add_forwarding_rule(prefix, self.nodes[self.stem_length - 1])
 
         print("Waiting for compute servers to launch.")
-        time.sleep(20)
+        time.sleep(5)
         print("")

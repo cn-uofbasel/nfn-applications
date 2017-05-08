@@ -47,13 +47,16 @@ class Test(object):
             self.process_handle.cancel()
         if self.update_handle is not None:
             self.update_handle.cancel()
+        if self.network is not None:
+            print()
+            self.network.shutdown()
         self.loop.stop()
         self.result = result
         if result == TestResult.Success:
             print("\nTest succeeded (" + self.name + ")\n")
             self.on_succeed()
         if result == TestResult.Failure:
-            print("\nTest failed (" + self.name + ")\n")
+            print("\n❗ Test failed (" + self.name + ")\n")
             self.on_fail()
 
     def test_timeout(self):

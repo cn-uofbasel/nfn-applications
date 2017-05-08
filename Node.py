@@ -26,6 +26,7 @@ class Node(object):
 
     def shutdown(self):
         self.process.terminate()
+        atexit.unregister(self.shutdown)
         print("Terminated node " + self.description)
 
     def connect(self):
@@ -43,7 +44,6 @@ class Node(object):
         content = data.getContent().toRawStr()
         print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
                                                             urllib.parse.unquote(content)))
-        pass
 
     def on_timeout(self, interest):
         print("Interest timed out '{}'".format(Util.interest_to_string(interest)))

@@ -17,7 +17,7 @@ class Util(object):
         print("Done.")
 
     @staticmethod
-    def compile_nfn_scala(clean=False):
+    def compile_nfn_scala(assembly=True, clean=False):
         print("")
         wd = "$NFNSCALA_HOME"
         src = os.path.expandvars(wd)
@@ -25,7 +25,8 @@ class Util(object):
             print("$NFNSCALA_HOME not set!")
             return
         print("Compiling nfn-scala.")
-        cmd = "sbt clean compile" if clean else "sbt compile"
+        cmd = "sbt clean" if clean else "sbt"
+        cmd = cmd + (" assembly" if assembly else " compile")
         call(cmd.split(" "), cwd=src)
         print("Done.")
 
@@ -52,3 +53,9 @@ class Util(object):
         if is_segment:
             string += "/" + last_component
         return string
+
+    @staticmethod
+    def log_on_data(interest, data):
+        content = data.getContent().toRawStr()
+        print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
+                                                            urllib.parse.unquote(content)))
