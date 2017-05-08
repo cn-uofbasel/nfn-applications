@@ -1,7 +1,9 @@
+import io
+
 from Network import *
 from Test import *
 from Util import *
-
+from PIL import Image
 
 class SimulationRenderTest(Test):
     def __init__(self):
@@ -39,6 +41,15 @@ class SimulationRenderTest(Test):
         content = data.getContent().toRawStr()
         print("Received data for intermediate interest '{}':\n{}".format(Util.interest_to_string(interest),
                 urllib.parse.unquote(content)))
+
+        text = urllib.parse.unquote(data.getContent().toRawStr())
+        bytes = data.getContent().toBytes()
+
+        img_file = open("/Users/Bazsi/Desktop/nbody.png", "wb")
+        img_file.write(bytearray(bytes))
+
+        img = Image.open(io.BytesIO(bytes))
+        img.show()
 
     def on_data(self, interest, data):
         content = data.getContent().toRawStr()

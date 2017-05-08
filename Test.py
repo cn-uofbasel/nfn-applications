@@ -1,3 +1,4 @@
+import sys
 import asyncio
 from enum import Enum
 
@@ -11,7 +12,7 @@ class Test(object):
     def __init__(self, name=None, network=None):
         self.name = name if name is not None else type(self).__name__
         self.network = network
-        self.loop = asyncio.get_event_loop()
+        self.loop = None
         self.process_interval = 1
         self.update_interval = 1
         self.result = None
@@ -65,20 +66,15 @@ class Test(object):
 
     def start(self):
         try:
-            print("\nTest started (" + self.name + ")\n"
-                                                 "")
+            print("\nTest started (" + self.name + ")\n")
+            self.loop = asyncio.get_event_loop()
             self.setup()
             self.process_handle = self.loop.call_soon(self.process_events)
             self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
             if self.max_duration > 0:
                 self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
             self.loop.run_forever()
-            self.loop.close()
         except (KeyboardInterrupt, SystemExit):
             print("\nAborting.")
-
-
-
-
 
 

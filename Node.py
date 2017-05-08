@@ -1,6 +1,7 @@
 import asyncio
 import urllib
 import atexit
+import socket
 from Util import *
 
 from pyndn import Name, Interest, Face
@@ -22,12 +23,25 @@ class Node(object):
             self.launch()
 
     def launch(self):
+        self.check_port()
         atexit.register(self.shutdown)
 
     def shutdown(self):
         self.process.terminate()
         atexit.unregister(self.shutdown)
         print("Terminated node " + self.description)
+
+    def check_port(self):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            s.bind((self.ip, self.port))
+        except socket.error as e:
+            if e.errno == 98:
+                print("Port is already in use")
+            else:
+                print(e)
+            raise e
+        s.close()
 
     def connect(self):
         if self.face is None:

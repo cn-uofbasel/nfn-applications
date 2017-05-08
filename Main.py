@@ -11,7 +11,11 @@ from SimulationRenderTest import SimulationRenderTest
 class SimpleTest(Test):
     def setup(self):
         self.network = SimpleNetwork(4)
-        self.network.nodes[0].send_interest("/node4/nfn_service_WordCount/(@x call 2 x 'foo bar')/NFN")
+        self.network.nodes[0].send_interest("/node4/nfn_service_WordCount/(@x call 2 x 'foo bar lorem ipsum dolor')/NFN", on_data=self.on_data)
+    def on_data(self, interest, data):
+        Util.log_on_data(interest, data)
+        result = TestResult.Success if int(data.getContent().toRawStr()) is 5 else TestResult.Failure
+        self.finish_with_result(result)
 
 
 class SerialTest(Test):
@@ -28,13 +32,21 @@ class EchoTest(Test):
     def setup(self):
         self.network = SimpleNetwork(4)
         basename = "/node4/nfn_service_Echo/(@x call 2 x 'foo bar')"
-        self.network.nodes[0].send_interest(basename + "/NFN")
+        self.network.nodes[0].send_interest(basename + "/NFN", on_data=self.on_data)
+    def on_data(self, interest, data):
+        Util.log_on_data(interest, data)
+        result = TestResult.Success if int(data.getContent().toRawStr()) is "foo bar" else TestResult.Failure
+        self.finish_with_result(result)
 
 
 class FetchContentTest(Test):
     def setup(self):
         self.network = ThesisNetwork()
-        self.network.nodes[0].send_interest("/node4/nfn_service_FetchContentTest/(@x call 2 x 'foo bar')/NFN")
+        self.network.nodes[0].send_interest("/node4/nfn_service_FetchContentTest/(@x call 2 x 'foo bar')/NFN", on_data=self.on_data)
+    def on_data(self, interest, data):
+        Util.log_on_data(interest, data)
+        result = TestResult.Success if 1 is 2 else TestResult.Failure
+        self.finish_with_result(result)
 
 
 class StopTest(Test):
@@ -79,17 +91,20 @@ class ChainTest(Test):
 
 class SimulationTest(Test):
     def setup(self):
-        self.network = ThesisNetwork()
-        name = "/node6/nfn_service_NBody_SimulationService/(@x call 1 x)/NFN"
-        # name = "/node4/nfn_service_Echo/(@x call 2 x (call 1 %2Fnode6%2Fnfn_service_NBody_SimulationService))"
-        self.network.nodes[0].send_interest(name)
+        self.network = SerialNetwork(6)
+        name = "/node6/nfn_service_NBody_SimulationService/(@x call 2 x 'foo bar')/NFN"
+        self.network.nodes[0].send_interest(name, on_data=self.on_data)
+    def on_data(self, interest, data):
+        Util.log_on_data(interest, data)
+        result = TestResult.Success
+        self.finish_with_result(result)
 
 
 
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
 
-TestSuite([SerialTest()]).start()
+# TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 
 # StopTest().start()
 # EchoTest().start()
@@ -103,10 +118,11 @@ TestSuite([SerialTest()]).start()
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
-# SimulationRenderTest().start()
+SimulationRenderTest().start()
 
 # Util.clean_output_folder()
 
+asyncio.get_event_loop().close()
 
 
 
