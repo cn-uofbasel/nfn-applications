@@ -1,4 +1,5 @@
 from Node import Node
+from Config import *
 import os
 from subprocess import Popen, check_output, PIPE
 
@@ -14,7 +15,7 @@ class NFNNode(Node):
         super().launch()
         relay = os.path.expandvars("$CCNL_HOME/bin/ccn-nfn-relay")
         self.mgmt = '/tmp/mgmt-nfn-relay-' + str(self.port) + '.sock'
-        command = [relay, '-v', 'trace', '-u', str(self.port), '-x', self.mgmt]
+        command = [relay, '-v', Config.ccn_log_level.value, '-u', str(self.port), '-x', self.mgmt]
         output_dir = './output'
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

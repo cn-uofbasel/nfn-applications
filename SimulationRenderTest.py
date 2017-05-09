@@ -80,7 +80,7 @@ class SimulationRenderTest(Test):
     def on_intermediate(self, interest, data):
         content = data.getContent().toRawStr()
         name = Util.interest_to_string(interest)
-        print("Received data for intermediate interest '{}':\n{}".format(name, urllib.parse.unquote(content)))
+        # print("Received data for intermediate interest '{}':\n{}".format(name, urllib.parse.unquote(content)))
 
         index = Util.get_intermediate_index(interest)
         if index < 0:
@@ -95,8 +95,9 @@ class SimulationRenderTest(Test):
 
         img_bytes = data.getContent().toBytes()
 
-        # img_file = open("/Users/Bazsi/Desktop/nbody.png", "wb")
-        # img_file.write(bytearray(img_bytes))
+        img_file = open("./output/nbody/" + str(index) + ".png", "wb")
+        img_file.write(bytearray(img_bytes))
+        # print("Saved: ")
 
         # img = Image.open(io.BytesIO(img_bytes))
         # img.show()

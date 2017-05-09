@@ -2,8 +2,7 @@ from Test import *
 from TestSuite import *
 from Network import *
 from Util import *
-from tkinter import *
-from PIL import Image, ImageTk
+from Config import *
 
 from IntermediateTest import IntermediateTest
 from NBodyTest import NBodyTest
@@ -126,6 +125,8 @@ class SimulationTest(Test):
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
 
+Config.ccn_log_level = CCNLogLevel.Error
+
 # TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 
 # StopTest().start()
@@ -140,8 +141,9 @@ class SimulationTest(Test):
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
-SimulationRenderTest(enable_ui=True).start()
 # UITest().start()
+
+SimulationRenderTest(enable_ui=True).start()
 
 # Util.clean_output_folder()
 

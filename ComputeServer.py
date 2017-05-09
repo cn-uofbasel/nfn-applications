@@ -18,7 +18,7 @@ class ComputeServer(Node):
                    '--mgmtsocket', self.nfn_node.mgmt,
                    '--ccnl-port', str(self.nfn_node.port),
                    '--cs-port', str(self.port),
-                   '--debug',
+                   # '--debug',
                    '--ccnl-already-running',
                    self.nfn_node.prefix]
 
