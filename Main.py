@@ -2,10 +2,16 @@ from Test import *
 from TestSuite import *
 from Network import *
 from Util import *
+from tkinter import *
+from PIL import Image, ImageTk
 
 from IntermediateTest import IntermediateTest
 from NBodyTest import NBodyTest
 from SimulationRenderTest import SimulationRenderTest
+
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtCore import QTimer
 
 
 class SimpleTest(Test):
@@ -99,7 +105,23 @@ class SimulationTest(Test):
         result = TestResult.Success
         self.finish_with_result(result)
 
-
+# class UITest(Test):
+#     def setup(self):
+#         self.process_interval = 0
+#         self.update_interval = 0
+#         self.network = SerialNetwork(6)
+#         app = QApplication(sys.argv)
+#         w = QWidget()
+#         w.resize(250, 150)
+#         w.move(300, 300)
+#         w.setWindowTitle('Simple')
+#         w.show()
+#         QTimer.singleShot(1000, self.timer_fired)
+#         sys.exit(app.exec_())
+#     def timer_fired(self):
+#         print("Timer")
+#         QTimer.singleShot(1000, self.timer_fired)
+#         self.network.process_events()
 
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
@@ -118,11 +140,18 @@ class SimulationTest(Test):
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
-SimulationRenderTest().start()
+SimulationRenderTest(enable_ui=True).start()
+# UITest().start()
 
 # Util.clean_output_folder()
 
-asyncio.get_event_loop().close()
+# def timer_fired():
+#     print("Timer fired!")
+
+
+
+
+# asyncio.get_event_loop().close()
 
 
 

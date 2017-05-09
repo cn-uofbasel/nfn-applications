@@ -20,6 +20,7 @@ class Test(object):
         self.timeout_handle = None
         self.process_handle = None
         self.update_handle = None
+        self.use_event_loop = True
 
     def setup(self):
         pass
@@ -67,13 +68,14 @@ class Test(object):
     def start(self):
         try:
             print("\nTest started (" + self.name + ")\n")
-            self.loop = asyncio.get_event_loop()
             self.setup()
-            self.process_handle = self.loop.call_soon(self.process_events)
-            self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
-            if self.max_duration > 0:
-                self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
-            self.loop.run_forever()
+            if self.use_event_loop:
+                self.loop = asyncio.get_event_loop()
+                self.process_handle = self.loop.call_soon(self.process_events)
+                self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
+                if self.max_duration > 0:
+                    self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
+                self.loop.run_forever()
         except (KeyboardInterrupt, SystemExit):
             print("\nAborting.")
 

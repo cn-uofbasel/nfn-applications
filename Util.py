@@ -42,6 +42,16 @@ class Util(object):
                 print(e)
 
     @staticmethod
+    def get_intermediate_index(interest):
+        name = interest.getName()
+        for i in range(0, name.size() - 1):
+            comp = name.get(i).getValue().toRawStr()
+            # print("comp: " + comp)
+            if comp.startswith("GIM"):
+                return int(comp.split(" ")[1])
+        return -1
+
+    @staticmethod
     def interest_to_string(interest):
         uri = interest.getName().toUri()
         cmps = uri.split("/")
