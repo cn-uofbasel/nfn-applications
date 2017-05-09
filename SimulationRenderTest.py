@@ -30,6 +30,9 @@ class SimulationRenderTest(Test):
         if self.enable_ui:
             self.start_ui()
 
+    def on_complete(self):
+        QApplication.quit()
+
     def sigint_handler(self, *args):
         QApplication.quit()
 
@@ -49,12 +52,12 @@ class SimulationRenderTest(Test):
         sys.exit(app.exec_())
 
     def update_timer_fired(self):
-        print("Update timer fired.")
+        # print("Update timer fired.")
         self.update()
         QTimer.singleShot(self.update_interval * 1000, self.update_timer_fired)
 
     def process_timer_fired(self):
-        print("Process timer fired.")
+        # print("Process timer fired.")
         self.network.process_events()
         QTimer.singleShot(self.process_interval * 1000, self.process_timer_fired)
 
@@ -68,7 +71,7 @@ class SimulationRenderTest(Test):
             print("No intermediate results available yet.")
             return
         highest_available = int(content)
-        print("Highest available intermediate: " + str(highest_available))
+        # print("Highest available intermediate: " + str(highest_available))
         for i in range(self.highest_request_sent + 1, highest_available + 1):
             self.request_intermediate(i)
         self.highest_request_sent = highest_available

@@ -74,7 +74,7 @@ class Node(object):
         interest = Interest(name)
         interest.setInterestLifetimeMilliseconds(1000 * timeout)
         self.face.expressInterest(interest, on_data, on_timeout)
-        print("Sent interest '{}'".format(Util.interest_to_string(interest)))
+        # print("Sent interest '{}'".format(Util.interest_to_string(interest)))
 
     def send_interest_later(self, delay, uri, on_data=None, on_timeout=None, timeout=30):
         loop = asyncio.get_event_loop()

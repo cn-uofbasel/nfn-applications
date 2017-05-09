@@ -28,6 +28,9 @@ class Test(object):
     def update(self):
         pass
 
+    def on_complete(self):
+        pass
+
     def on_succeed(self):
         pass
 
@@ -52,8 +55,10 @@ class Test(object):
         if self.network is not None:
             print()
             self.network.shutdown()
-        self.loop.stop()
+        if self.use_event_loop:
+            self.loop.stop()
         self.result = result
+        self.on_complete()
         if result == TestResult.Success:
             print("\nTest succeeded (" + self.name + ")\n")
             self.on_succeed()
