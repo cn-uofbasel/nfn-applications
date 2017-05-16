@@ -43,6 +43,7 @@ class Request(object):
 
     def on_interest_timeout(self, interest):
         print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
+        self.on_timeout(self)
         pass
 
     def request_next_segments(self):
@@ -86,6 +87,7 @@ class Request(object):
 
     def on_segment_timeout(self, interest):
         print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
+        self.on_timeout(self)
 
     def handle_completion(self):
         content = bytearray()
@@ -95,11 +97,11 @@ class Request(object):
         interest = Interest(Name(self.uri))
         blob = Blob(content)
         size = blob.size()
+        print("Received all segments ({} bytes) for interest '{}':\n{}"
+              .format(size, Util.interest_to_string(interest), urllib.parse.unquote(blob.toRawStr())))
         data = Data(interest.getName())
         data.setContent(blob)
         self.on_data(self, data)
-        print("Received all segments ({} bytes) for interest '{}':\n{}"
-              .format(size, Util.interest_to_string(interest), urllib.parse.unquote(blob.toRawStr())))
 
     def on_data_fallback(self, request, data):
         pass

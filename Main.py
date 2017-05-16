@@ -108,9 +108,11 @@ class RedirectTest(Test):
         Request(self.network.nodes[0], name, on_data=self.on_data, on_timeout=self.on_timeout).send()
 
     def on_data(self, interest, data):
+        self.finish_with_result(TestResult.Success)
         pass
 
     def on_timeout(self, interest):
+        self.finish_with_result(TestResult.Failure)
         pass
 
 
