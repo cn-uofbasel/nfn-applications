@@ -65,6 +65,14 @@ class Util(object):
         return string
 
     @staticmethod
+    def find_segment_number(name):
+        for i in range(0, name.size()):
+            component = name.get(i)
+            if component.isSegment():
+                return component.toSegment()
+        return -1
+
+    @staticmethod
     def log_on_data(interest, data):
         content = data.getContent().toRawStr()
         print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),

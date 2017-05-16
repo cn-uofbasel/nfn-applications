@@ -3,6 +3,7 @@ from TestSuite import *
 from Network import *
 from Util import *
 from Config import *
+from Request import *
 
 from IntermediateTest import IntermediateTest
 from NBodyTest import NBodyTest
@@ -11,6 +12,12 @@ from SimulationRenderTest import SimulationRenderTest
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.QtCore import QTimer
+
+class App(object):
+    app = None
+    # @staticmethod
+    # def setup():
+    #     App.app = QApplication(sys.argv)
 
 
 class SimpleTest(Test):
@@ -94,6 +101,19 @@ class ChainTest(Test):
         self.network.nodes[0].send_interest(name)
 
 
+class RedirectTest(Test):
+    def setup(self):
+        self.network = SimpleNetwork(4)
+        name = "/node4/nfn_service_ChunkTest/(@x call 1 x)/NFN"
+        Request(self.network.nodes[0], name, on_data=self.on_data, on_timeout=self.on_timeout).send()
+
+    def on_data(self, interest, data):
+        pass
+
+    def on_timeout(self, interest):
+        pass
+
+
 class SimulationTest(Test):
     def setup(self):
         self.network = SerialNetwork(6)
@@ -127,6 +147,19 @@ class SimulationTest(Test):
 
 Config.ccn_log_level = CCNLogLevel.Error
 
+# App.setup()
+# App.app = QApplication(sys.argv)
+
+# def tick():
+#     print("Tick")
+#
+# app = QApplication(sys.argv)
+# process_timer = QTimer()
+# process_timer.timeout.connect(tick)
+# process_timer.start(1000)
+# app.exec_()
+
+
 # TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 
 # StopTest().start()
@@ -138,12 +171,13 @@ Config.ccn_log_level = CCNLogLevel.Error
 # FetchServiceTest().start()
 # ChunkTest().start()
 # ChainTest().start()
+RedirectTest().start()
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
 # UITest().start()
 
-SimulationRenderTest(enable_ui=True).start()
+# SimulationRenderTest(enable_ui=True).start()
 
 # Util.clean_output_folder()
 

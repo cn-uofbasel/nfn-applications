@@ -2,6 +2,10 @@ import sys
 import asyncio
 from enum import Enum
 
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QPixmap, QImage
+
 
 class TestResult(Enum):
     Success = 0
@@ -9,18 +13,21 @@ class TestResult(Enum):
 
 
 class Test(object):
+    app = QApplication(sys.argv)
+
     def __init__(self, name=None, network=None):
         self.name = name if name is not None else type(self).__name__
         self.network = network
-        self.loop = None
+        # self.loop = None
+        self.app = None
         self.process_interval = 1
         self.update_interval = 1
         self.result = None
         self.max_duration = 0
-        self.timeout_handle = None
-        self.process_handle = None
-        self.update_handle = None
-        self.use_event_loop = True
+        self.timeout_timer = None
+        self.events_timer = None
+        self.update_timer = None
+        # self.use_event_loop = True
 
     def setup(self):
         pass
@@ -37,26 +44,63 @@ class Test(object):
     def on_fail(self):
         pass
 
-    def process_update(self):
+    def update_timer_fired(self):
         self.update()
-        self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
+        # self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
 
-    def process_events(self):
+    def events_timer_fired(self):
         self.network.process_events()
-        self.process_handle = self.loop.call_later(self.process_interval, self.process_events)
+        # self.process_handle = self.loop.call_later(self.process_interval, self.process_events)
+
+    def timeout_timer_fired(self):
+        if self.result is None:
+            self.finish_with_result(TestResult.Failure)
+
+    def start(self):
+        try:
+            print("\nTest started (" + self.name + ")\n")
+            self.setup()
+            self.app = QApplication(sys.argv)
+
+            self.events_timer = QTimer()
+            self.events_timer.timeout.connect(self.events_timer_fired)
+            self.events_timer.start(self.process_interval)
+
+            self.update_timer = QTimer()
+            self.update_timer.timeout.connect(self.update_timer_fired)
+            self.update_timer.start(self.update_interval)
+
+            if self.max_duration > 0:
+                self.timeout_timer = QTimer()
+                self.timeout_timer.timeout.connect(self.timeout_timer_fired)
+                self.timeout_timer.start(self.max_duration)
+
+            self.app.exec_()
+
+            # if self.use_event_loop:
+            # self.loop = asyncio.get_event_loop()
+            # self.process_handle = self.loop.call_soon(self.process_events)
+            # self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
+            # if self.max_duration > 0:
+            #     self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
+            # self.loop.run_forever()
+
+        except (KeyboardInterrupt, SystemExit):
+            print("\nAborting.")
 
     def finish_with_result(self, result):
-        if self.timeout_handle is not None:
-            self.timeout_handle.cancel()
-        if self.process_handle is not None:
-            self.process_handle.cancel()
-        if self.update_handle is not None:
-            self.update_handle.cancel()
+        if self.timeout_timer is not None:
+            self.timeout_timer.stop()
+        if self.events_timer is not None:
+            self.events_timer.stop()
+        if self.update_timer is not None:
+            self.update_timer.stop()
         if self.network is not None:
             print()
             self.network.shutdown()
-        if self.use_event_loop:
-            self.loop.stop()
+        # if self.use_event_loop:
+        #     self.loop.stop()
+
         self.result = result
         self.on_complete()
         if result == TestResult.Success:
@@ -66,22 +110,5 @@ class Test(object):
             print("\n❗ Test failed (" + self.name + ")\n")
             self.on_fail()
 
-    def test_timeout(self):
-        if self.result is None:
-            self.finish_with_result(TestResult.Failure)
-
-    def start(self):
-        try:
-            print("\nTest started (" + self.name + ")\n")
-            self.setup()
-            if self.use_event_loop:
-                self.loop = asyncio.get_event_loop()
-                self.process_handle = self.loop.call_soon(self.process_events)
-                self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
-                if self.max_duration > 0:
-                    self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
-                self.loop.run_forever()
-        except (KeyboardInterrupt, SystemExit):
-            print("\nAborting.")
-
+        self.app.exit()
 

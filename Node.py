@@ -8,8 +8,6 @@ from pyndn import Name, Interest, Face
 from pyndn.transport.udp_transport import UdpTransport
 
 
-
-
 class Node(object):
     def __init__(self, port, launch=False):
         self.ip = "127.0.0.1"
@@ -25,6 +23,8 @@ class Node(object):
     def launch(self):
         self.check_port()
         atexit.register(self.shutdown)
+        if not self.connected:
+            self.connect()
 
     def shutdown(self):
         self.process.terminate()
@@ -54,30 +54,30 @@ class Node(object):
         if self.face is not None:
             self.face.processEvents()
 
-    def on_data(self, interest, data):
-        content = data.getContent().toRawStr()
-        print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
-                                                            urllib.parse.unquote(content)))
-
-    def on_timeout(self, interest):
-        print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
-        pass
-
-    def send_interest(self, uri, on_data=None, on_timeout=None, timeout=30):
-        if not self.connected:
-            self.connect()
-        if not on_data:
-            on_data = self.on_data
-        if not on_timeout:
-            on_timeout = self.on_data
-        name = Name(uri)
-        interest = Interest(name)
-        interest.setInterestLifetimeMilliseconds(1000 * timeout)
-        self.face.expressInterest(interest, on_data, on_timeout)
-        # print("Sent interest '{}'".format(Util.interest_to_string(interest)))
-
-    def send_interest_later(self, delay, uri, on_data=None, on_timeout=None, timeout=30):
-        loop = asyncio.get_event_loop()
-        loop.call_later(delay, self.send_interest, uri, on_data, on_timeout, timeout)
+    # def on_data(self, interest, data):
+    #     content = data.getContent().toRawStr()
+    #     print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
+    #                                                         urllib.parse.unquote(content)))
+    #
+    # def on_timeout(self, interest):
+    #     print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
+    #
+    # def send_interest(self, uri, on_data=None, on_timeout=None, timeout=30):
+    #
+    #     if not on_data:
+    #         on_data = self.on_data
+    #     if not on_timeout:
+    #         on_timeout = self.on_data
+    #     name = Name(uri)
+    #     interest = Interest(name)
+    #     interest.setInterestLifetimeMilliseconds(1000 * timeout)
+    #     self.face.expressInterest(interest, on_data, on_timeout)
+    #     # print("Sent interest '{}'".format(Util.interest_to_string(interest)))
+    #
+    # def send_interest_later(self, delay, uri, on_data=None, on_timeout=None, timeout=30):
+    #     pass
+    #     # TODO: use timer instead
+    #     # loop = asyncio.get_event_loop()
+    #     # loop.call_later(delay, self.send_interest, uri, on_data, on_timeout, timeout)
 
 
