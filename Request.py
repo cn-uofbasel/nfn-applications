@@ -3,17 +3,24 @@ import urllib
 import atexit
 import socket
 from Util import *
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QPixmap, QImage
 
 from pyndn import Name, Interest, Blob, Data
 
 class Request(object):
-    def __init__(self, node, interest, timeout=30, on_data=None, on_timeout=None):
+    def __init__(self, node, name, timeout=30, intermediate_interval=1, on_data=None, on_timeout=None, on_intermediate=None):
+        # TODO: allow interest to be a string uri or an Interest object and convert to self.uri AND self.interest in both cases.
         self.node = node
-        self.uri = interest
+        self.name = name
+        self.interest = Interest(Name(name))
         self.timeout = timeout
+        self.intermediate_interval = intermediate_interval
 
         self.on_data = on_data if on_data is not None else self.on_data_fallback
         self.on_timeout = on_timeout if on_timeout is not None else self.on_timeout_fallback
+        self.on_intermediate = on_intermediate
 
         self.redirect = None
         self.final_segment = None
@@ -21,14 +28,60 @@ class Request(object):
         self.pending_segments = set()
         self.segments = {}
 
+        self.highest_gim_sent = -1
+        self.highest_gim_received = -1
+        self.cim_timer = None
+        self.cim_name = self.name
+        if self.cim_name.endswith("/NFN"):
+            self.cim_name = self.cim_name[:-4] + "/R2C/CIM/NFN"
+
     def send(self):
-        name = Name(self.uri)
-        interest = Interest(name)
-        interest.setInterestLifetimeMilliseconds(1000 * self.timeout)
-        self.node.face.expressInterest(interest, self.on_interest_data, self.on_interest_timeout)
-        print("Sent interest '{}'".format(Util.interest_to_string(interest)))
+        self.interest.setInterestLifetimeMilliseconds(1000 * self.timeout)
+        self.node.face.expressInterest(self.interest, self.on_interest_data, self.on_interest_timeout)
+        print("Sent interest '{}'".format(self.name))
+        if self.intermediate_interval > 0 and self.on_intermediate is not None:
+            self.cim_timer = QTimer()
+            self.cim_timer.timeout.connect(self.cim_timer_fired)
+            self.cim_timer.start(self.intermediate_interval * 1000)
+
+    def cim_timer_fired(self):
+        Request(self.node, self.cim_name, timeout=self.intermediate_interval, on_data=self.on_cim_data).send()
+
+    def on_cim_data(self, request, data):
+        content = data.getContent().toRawStr()
+        if not content:
+            print("No intermediate results available yet.")
+            return
+        highest_available = int(content)
+        # print("Highest available intermediate: " + str(highest_available))
+        for i in range(self.highest_gim_sent + 1, highest_available + 1):
+            self.request_intermediate(i)
+        self.highest_gim_sent = highest_available
+
+    def request_intermediate(self, index):
+        gim_uri = self.name
+        if gim_uri.endswith("/NFN"):
+            gim_uri = gim_uri[:-4] + "/R2C/GIM " + str(index) + "/NFN"
+        Request(self.node, gim_uri, on_data=self.on_intermediate_data).send()
+
+    def on_intermediate_data(self, request, data):
+        index = Util.get_intermediate_index(request.interest)
+        if index < 0:
+            print("Invalid intermediate result.")
+            return
+
+        if index < self.highest_gim_received:
+            print("Received old intermediate out of order. Ignore.")
+            return
+
+        self.highest_gim_received = index
+
+        self.on_intermediate(self, index, data)
 
     def on_interest_data(self, interest, data):
+        if self.cim_timer is not None:
+            self.cim_timer.stop()
+
         content = data.getContent().toRawStr()
         redirectPrefix = "redirect:"
         if content.startswith(redirectPrefix):
@@ -94,7 +147,7 @@ class Request(object):
         for i in sorted(self.segments):
             segment = self.segments[i]
             content.extend(segment.getContent().buf())
-        interest = Interest(Name(self.uri))
+        interest = Interest(Name(self.name))
         blob = Blob(content)
         size = blob.size()
         print("Received all segments ({} bytes) for interest '{}':\n{}"
@@ -107,4 +160,7 @@ class Request(object):
         pass
 
     def on_timeout_fallback(self, request):
+        pass
+
+    def on_intermediate_fallback(self, request, index, data):
         pass

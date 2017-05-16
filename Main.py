@@ -107,11 +107,11 @@ class RedirectTest(Test):
         name = "/node4/nfn_service_ChunkTest/(@x call 1 x)/NFN"
         Request(self.network.nodes[0], name, on_data=self.on_data, on_timeout=self.on_timeout).send()
 
-    def on_data(self, interest, data):
+    def on_data(self, request, data):
         self.finish_with_result(TestResult.Success)
         pass
 
-    def on_timeout(self, interest):
+    def on_timeout(self, request):
         self.finish_with_result(TestResult.Failure)
         pass
 
@@ -126,41 +126,11 @@ class SimulationTest(Test):
         result = TestResult.Success
         self.finish_with_result(result)
 
-# class UITest(Test):
-#     def setup(self):
-#         self.process_interval = 0
-#         self.update_interval = 0
-#         self.network = SerialNetwork(6)
-#         app = QApplication(sys.argv)
-#         w = QWidget()
-#         w.resize(250, 150)
-#         w.move(300, 300)
-#         w.setWindowTitle('Simple')
-#         w.show()
-#         QTimer.singleShot(1000, self.timer_fired)
-#         sys.exit(app.exec_())
-#     def timer_fired(self):
-#         print("Timer")
-#         QTimer.singleShot(1000, self.timer_fired)
-#         self.network.process_events()
 
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
 
 Config.ccn_log_level = CCNLogLevel.Error
-
-# App.setup()
-# App.app = QApplication(sys.argv)
-
-# def tick():
-#     print("Tick")
-#
-# app = QApplication(sys.argv)
-# process_timer = QTimer()
-# process_timer.timeout.connect(tick)
-# process_timer.start(1000)
-# app.exec_()
-
 
 # TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 
@@ -173,23 +143,22 @@ Config.ccn_log_level = CCNLogLevel.Error
 # FetchServiceTest().start()
 # ChunkTest().start()
 # ChainTest().start()
-RedirectTest().start()
+# RedirectTest().start()
 # SimulationTest().start()
 # IntermediateTest().start()
 # NBodyTest().start()
 # UITest().start()
-
-# SimulationRenderTest(enable_ui=True).start()
+SimulationRenderTest(enable_ui=True).start()
 
 # Util.clean_output_folder()
 
-# def timer_fired():
-#     print("Timer fired!")
 
-
-
-
-# asyncio.get_event_loop().close()
-
+# uri = "/node6/nfn_service_NBody_SimulationService/(@x call 2 x 'foo bar' %2Fnode%2Ftest)/NFN"
+# name = Name(uri)
+# interest = Interest(name)
+#
+# res = interest.getName().toUri()
+# res2 = urllib.parse.unquote(res)
+# print(res2)
 
 
