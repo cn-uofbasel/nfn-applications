@@ -1,4 +1,5 @@
 import sys
+import signal
 import asyncio
 from enum import Enum
 
@@ -56,11 +57,16 @@ class Test(object):
         if self.result is None:
             self.finish_with_result(TestResult.Failure)
 
+    def sigint_handler(self, *args):
+        self.app.exit()
+
     def start(self):
         try:
             print("\nTest started (" + self.name + ")\n")
 
             self.app = QApplication(sys.argv)
+            signal.signal(signal.SIGINT, self.sigint_handler)
+
             self.setup()
 
             self.events_timer = QTimer()
