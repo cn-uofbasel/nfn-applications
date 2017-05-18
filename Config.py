@@ -11,6 +11,12 @@ class CCNLogLevel(Enum):
     Trace = "trace"
 
 
+class NFNLogLevel(Enum):
+    Normal = ""
+    Debug = "--debug"
+
+
 class Config(object):
-    ccn_log_level = CCNLogLevel.Error
+    ccn_log_level = CCNLogLevel.Trace
+    nfn_log_level = NFNLogLevel.Debug
 

@@ -1,6 +1,8 @@
 from subprocess import call
 import os
 import urllib
+import uuid
+from subprocess import Popen, check_output, PIPE
 
 class Util(object):
     @staticmethod
@@ -77,3 +79,38 @@ class Util(object):
         content = data.getContent().toRawStr()
         print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
                                                             urllib.parse.unquote(content)))
+
+    @staticmethod
+    def ccnl_home():
+        ccnl_home = os.path.expandvars("$CCNL_HOME").strip()
+        if not ccnl_home or ccnl_home == "$CCNL_HOME":
+            print("$CCNL_HOME not set!")
+            return None
+        return ccnl_home
+
+    @staticmethod
+    def nfn_home():
+        nfn_home = os.path.expandvars("$NFNSCALA_HOME").strip()
+        if not nfn_home or nfn_home == "$NFNSCALA_HOME":
+            print("$NFNSCALA_HOME not set!")
+            return None
+        return nfn_home
+
+    @staticmethod
+    def temp_folder():
+        content_dir = './temp'
+        if not os.path.exists(content_dir):
+            os.makedirs(content_dir)
+        return content_dir
+
+    @staticmethod
+    def write_binary_content(name, data):
+        ccnl_home = Util.ccnl_home()
+        if ccnl_home is None:
+            return
+        path = Util.temp_folder() + "/" + str(uuid.uuid4()) + ".ndn2013"
+        executable = ccnl_home + "/bin/ccn-lite-mkC"
+        command = [executable, '-s', 'ndn2013', '-o', path, name]
+        mkc = Popen(command, stdin=PIPE)
+        mkc.communicate(input=data)
+        return path

@@ -1,6 +1,9 @@
-from Node import Node
-from Config import *
 import os
+import uuid
+
+from Util import *
+from Config import *
+from Node import Node
 from subprocess import Popen, check_output, PIPE
 
 
@@ -49,3 +52,12 @@ class NFNNode(Node):
         check_output(command)
         print("Added rule " + self.description + " (" + prefix + ") -> " + node.description)
 
+    def add_content(self, name, data):
+        ccnl_home = Util.ccnl_home()
+        if ccnl_home is None:
+            return
+        path = Util.write_binary_content(name, data)
+        ctrl_path = ccnl_home + "/bin/ccn-lite-ctrl"
+        command = [ctrl_path, '-x', self.mgmt, 'addContentToCache', path]
+        check_output(command)
+        print("Added content to cache of node " + self.description)

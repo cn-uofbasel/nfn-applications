@@ -17,7 +17,7 @@ class SimulationRenderTest(Test):
     def setup(self):
         self.update_interval = 1
         self.process_interval = 1
-        self.max_duration = 30
+        # self.max_duration = 30
         self.network = SerialNetwork(6)
         if self.enable_ui:
             self.widget = QWidget()

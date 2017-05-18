@@ -127,10 +127,36 @@ class SimulationTest(Test):
         self.finish_with_result(result)
 
 
+class AddToCacheTest(Test):
+    def setup(self):
+        self.network = SimpleNetwork(4)
+        name = "/node4/SimpleContentTest"
+        data = "this is a test content".encode()
+        time.sleep(1)
+        self.network.nodes[3].add_content(name, data)
+        time.sleep(1)
+        Request(self.network.nodes[0], name, on_data=self.on_data).send()
+    def on_data(self, request, data):
+        self.finish_with_result(TestResult.Success)
+
+
+class PubSubTest(Test):
+    def setup(self):
+        self.network = ThesisNetwork()
+        name = "/node4/nfn_service_PubSubBroker/(@x call 2 x '%2Fnode6%2FPubSubMsg')/NFN"
+        Request(self.network.nodes[0], name, on_data=self.on_data, on_intermediate=self.on_intermediate).send()
+    def on_intermediate(self, request, index, data):
+        print("Received intermediate {}".format(index))
+        Util.log_on_data(request.interest, data)
+    def on_data(self, request, data):
+        Util.log_on_data(request.interest, data)
+        self.finish_with_result(TestResult.Success)
+
+
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
 
-Config.ccn_log_level = CCNLogLevel.Error
+# Config.ccn_log_level = CCNLogLevel.Error
 
 # TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 
@@ -148,17 +174,10 @@ Config.ccn_log_level = CCNLogLevel.Error
 # IntermediateTest().start()
 # NBodyTest().start()
 # UITest().start()
-SimulationRenderTest(enable_ui=True).start()
+# SimulationRenderTest(enable_ui=True).start()
+AddToCacheTest().start()
+# PubSubTest().start()
 
 # Util.clean_output_folder()
 
-
-# uri = "/node6/nfn_service_NBody_SimulationService/(@x call 2 x 'foo bar' %2Fnode%2Ftest)/NFN"
-# name = Name(uri)
-# interest = Interest(name)
-#
-# res = interest.getName().toUri()
-# res2 = urllib.parse.unquote(res)
-# print(res2)
-
-
+# Util.write_binary_content("/node6/PubSubMsg/0", "testdata".encode())

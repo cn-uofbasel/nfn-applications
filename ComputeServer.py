@@ -1,6 +1,7 @@
 from Node import Node
 import os
 from subprocess import Popen, check_output, PIPE
+from Config import *
 
 class ComputeServer(Node):
     def __init__(self, port, node, launch=False):
@@ -18,7 +19,7 @@ class ComputeServer(Node):
                    '--mgmtsocket', self.nfn_node.mgmt,
                    '--ccnl-port', str(self.nfn_node.port),
                    '--cs-port', str(self.port),
-                   # '--debug',
+                   Config.nfn_log_level.value,
                    '--ccnl-already-running',
                    self.nfn_node.prefix]
 
