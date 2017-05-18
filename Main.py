@@ -141,15 +141,28 @@ class AddToCacheTest(Test):
 
 
 class PubSubTest(Test):
+    def __init__(self):
+        super().__init__()
+        self.broker = "/node4/nfn_service_PubSubBroker"
+        self.msg = "/node6/PubSubMsg"
+        self.msg_count = 0
     def setup(self):
-        self.network = ThesisNetwork()
-        name = "/node4/nfn_service_PubSubBroker/(@x call 2 x '%2Fnode6%2FPubSubMsg')/NFN"
+        self.network = SerialNetwork(6)
+        param = self.msg.replace("/", "%2F")
+        name = self.broker + "/(@x call 2 x '" + param + "')/NFN"
         Request(self.network.nodes[0], name, on_data=self.on_data, on_intermediate=self.on_intermediate).send()
+        # Request(self.network.nodes[0], "/node4/nfn_service_PubSubBroker/(@x call 2 x 'foo bar lorem ipsum dolor')/NFN",
+        #         on_data=self.on_data).send()
+    def update(self):
+        name = self.msg + "/" + str(self.msg_count)
+        data = "this is published data #" + str(self.msg_count)
+        self.network.nodes[5].add_content(name, data.encode())
+        self.msg_count += 1
     def on_intermediate(self, request, index, data):
         print("Received intermediate {}".format(index))
         Util.log_on_data(request.interest, data)
     def on_data(self, request, data):
-        Util.log_on_data(request.interest, data)
+        # Util.log_on_data(request.interest, data)
         self.finish_with_result(TestResult.Success)
 
 
@@ -175,8 +188,8 @@ class PubSubTest(Test):
 # NBodyTest().start()
 # UITest().start()
 # SimulationRenderTest(enable_ui=True).start()
-AddToCacheTest().start()
-# PubSubTest().start()
+# AddToCacheTest().start()
+PubSubTest().start()
 
 # Util.clean_output_folder()
 
