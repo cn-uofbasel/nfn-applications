@@ -2,6 +2,8 @@ import asyncio
 import urllib
 import atexit
 import socket
+
+from Log import *
 from Util import *
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtCore import QTimer
@@ -50,7 +52,7 @@ class Request(object):
     def on_cim_data(self, request, data):
         content = data.getContent().toRawStr()
         if not content:
-            print("No intermediate results available yet.")
+            Log.info("No intermediate results available yet.")
             return
         highest_available = int(content)
         # print("Highest available intermediate: " + str(highest_available))
@@ -67,11 +69,11 @@ class Request(object):
     def on_intermediate_data(self, request, data):
         index = Util.get_intermediate_index(request.interest)
         if index < 0:
-            print("Invalid intermediate result.")
+            Log.error("Invalid intermediate result.")
             return
 
         if index < self.highest_gim_received:
-            print("Received old intermediate out of order. Ignore.")
+            Log.warn("Received old intermediate out of order. Ignore.")
             return
 
         self.highest_gim_received = index
@@ -87,15 +89,15 @@ class Request(object):
         if content.startswith(redirectPrefix):
             name = content[len(redirectPrefix):]
             self.redirect = Interest(Name(name))
-            print("Received redirect for interest '{}' -> '{}':\n{}"
+            Log.info("Received redirect for interest '{}' -> '{}':\n{}"
                   .format(Util.interest_to_string(interest), Util.interest_to_string(self.redirect), urllib.parse.unquote(content)))
             self.request_next_segments()
         else:
-            print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest), urllib.parse.unquote(content)))
+            Log.info("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest), urllib.parse.unquote(content)))
             self.on_data(self, data)
 
     def on_interest_timeout(self, interest):
-        print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
+        Log.warn("Interest timed out '{}'".format(Util.interest_to_string(interest)))
         self.on_timeout(self)
         pass
 
@@ -113,7 +115,7 @@ class Request(object):
         segment_name = Name(self.redirect.getName())
         segment_name.appendSegment(index)
         interest = Interest(segment_name)
-        print("Sent segment interest '{}'".format(Util.interest_to_string(interest)))
+        Log.info("Sent segment interest '{}'".format(Util.interest_to_string(interest)))
         self.node.face.expressInterest(interest, self.on_segment_data, self.on_segment_timeout)
 
     def on_segment_data(self, interest, data):
@@ -125,7 +127,7 @@ class Request(object):
             size = content.size()
             name = interest.getName()
             segmentNumber = Util.find_segment_number(name)
-            print("Received data ({} bytes) for segment '{}'.".format(size, Util.interest_to_string(interest)))
+            Log.info("Received data ({} bytes) for segment '{}'.".format(size, Util.interest_to_string(interest)))
             self.segments[segmentNumber] = data
             self.pending_segments.remove(segmentNumber)
             allSegmentsReceived = self.final_segment is not None \
@@ -136,10 +138,10 @@ class Request(object):
             else:
                 self.request_next_segments()
         else:
-            print("Received EMPTY data for segment '{}'.".format(Util.interest_to_string(interest)))
+            Log.warn("Received EMPTY data for segment '{}'.".format(Util.interest_to_string(interest)))
 
     def on_segment_timeout(self, interest):
-        print("Interest timed out '{}'".format(Util.interest_to_string(interest)))
+        Log.warn("Interest timed out '{}'".format(Util.interest_to_string(interest)))
         self.on_timeout(self)
 
     def handle_completion(self):
@@ -150,7 +152,7 @@ class Request(object):
         interest = Interest(Name(self.name))
         blob = Blob(content)
         size = blob.size()
-        print("Received all segments ({} bytes) for interest '{}':\n{}"
+        Log.info("Received all segments ({} bytes) for interest '{}':\n{}"
               .format(size, Util.interest_to_string(interest), urllib.parse.unquote(blob.toRawStr())))
         data = Data(interest.getName())
         data.setContent(blob)

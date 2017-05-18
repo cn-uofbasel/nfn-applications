@@ -2,6 +2,7 @@ import sys
 import signal
 import asyncio
 from enum import Enum
+from Log import *
 
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtCore import QTimer
@@ -62,7 +63,7 @@ class Test(object):
 
     def start(self):
         try:
-            print("\nTest started (" + self.name + ")\n")
+            Log.info("\nTest started (" + self.name + ")\n")
 
             self.app = QApplication(sys.argv)
             signal.signal(signal.SIGINT, self.sigint_handler)
@@ -93,7 +94,7 @@ class Test(object):
             # self.loop.run_forever()
 
         except (KeyboardInterrupt, SystemExit):
-            print("\nAborting.")
+            Log.error("\nAborting.")
 
     def finish_with_result(self, result):
         if self.timeout_timer is not None:
@@ -111,10 +112,10 @@ class Test(object):
         self.result = result
         self.on_complete()
         if result == TestResult.Success:
-            print("\nTest succeeded (" + self.name + ")\n")
+            Log.info("\nTest succeeded (" + self.name + ")\n")
             self.on_succeed()
         if result == TestResult.Failure:
-            print("\n❗ Test failed (" + self.name + ")\n")
+            Log.warn("\n❗ Test failed (" + self.name + ")\n")
             self.on_fail()
 
         self.app.exit()

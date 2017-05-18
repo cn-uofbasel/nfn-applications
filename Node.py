@@ -4,6 +4,7 @@ import atexit
 import socket
 from Util import *
 
+from Log import *
 from pyndn import Name, Interest, Face
 from pyndn.transport.udp_transport import UdpTransport
 
@@ -29,7 +30,7 @@ class Node(object):
     def shutdown(self):
         self.process.terminate()
         atexit.unregister(self.shutdown)
-        print("Terminated node " + self.description)
+        Log.info("Terminated node " + self.description)
 
     def check_port(self):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -37,9 +38,9 @@ class Node(object):
             s.bind((self.ip, self.port))
         except socket.error as e:
             if e.errno == 98:
-                print("Port is already in use")
+                Log.error("Port is already in use")
             else:
-                print(e)
+                Log.error(e)
             raise e
         s.close()
 

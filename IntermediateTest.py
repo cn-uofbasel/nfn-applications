@@ -21,7 +21,7 @@ class IntermediateTest(Test):
     def on_cim(self, interest, data):
         content = data.getContent().toRawStr()
         highest_available = int(content)
-        print("Highest available intermediate: " + str(highest_available))
+        Log.info("Highest available intermediate: " + str(highest_available))
         for i in range(self.highest_request + 1, highest_available + 1):
             self.request_intermediate(i)
         self.highest_request = highest_available
@@ -32,5 +32,5 @@ class IntermediateTest(Test):
 
     def on_intermediate(self, interest, data):
         content = data.getContent().toRawStr()
-        print("Received data for intermediate interest '{}':\n{}".format(Util.interest_to_string(interest),
+        Log.info("Received data for intermediate interest '{}':\n{}".format(Util.interest_to_string(interest),
                 urllib.parse.unquote(content)))

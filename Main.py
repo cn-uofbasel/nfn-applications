@@ -142,22 +142,25 @@ class PubSubTest(Test):
         self.network = SerialNetwork(6)
         param = self.msg.replace("/", "%2F")
         name = self.broker + "/(@x call 2 x '" + param + "')/NFN"
-        Request(self.network.nodes[0], name, on_data=self.on_data, on_intermediate=self.on_intermediate).send()
-    def update(self):
-        name = self.msg + "/" + str(self.msg_count)
-        data = "this is published data #" + str(self.msg_count)
-        self.network.nodes[5].add_content(name, data.encode())
-        self.msg_count += 1
-    def on_intermediate(self, request, index, data):
-        print("Received intermediate {}".format(index))
-    def on_data(self, request, data):
-        self.finish_with_result(TestResult.Success)
+        Request(self.network.nodes[0], name).send()
+    # def update(self):
+    #     name = self.msg + "/" + str(self.msg_count)
+    #     data = "this is published data #" + str(self.msg_count)
+    #     self.network.nodes[5].add_content(name, data.encode())
+    #     self.msg_count += 1
+    # def on_intermediate(self, request, index, data):
+    #     Log.info("Received intermediate {}".format(index))
+    # def on_data(self, request, data):
+    #     self.finish_with_result(TestResult.Success)
 
 
 # Util.compile_ccn_lite()
 # Util.compile_nfn_scala()
 
 # Config.ccn_log_level = CCNLogLevel.Error
+# Config.nfn_log_level = NFNLogLevel.Normal
+
+# Log.level = LogLevel.Error
 
 # TestSuite([EchoTest(), SimpleTest(), SerialTest(), SimulationTest()]).start()
 

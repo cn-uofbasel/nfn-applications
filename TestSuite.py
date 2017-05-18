@@ -1,5 +1,5 @@
 from Test import *
-
+from Log import *
 
 class TestSuite(object):
     def __init__(self, tests=[]):
@@ -11,8 +11,8 @@ class TestSuite(object):
         self.print_summary()
 
     def print_summary(self):
-        print("Test summary:")
-        print("-------------")
+        Log.info("Test summary:")
+        Log.info("-------------")
         count = 0
         for test in self.tests:
             if test.result == TestResult.Success:
@@ -20,7 +20,7 @@ class TestSuite(object):
                 print(test.name + " passed.")
             else:
                 print("❗ " + test.name + " failed.")
-        print("-------------")
-        print(str(count) + "/" + str(len(self.tests)) + " tests passed.\n")
+        Log.info("-------------")
+        Log.info(str(count) + "/" + str(len(self.tests)) + " tests passed.\n")
 
 

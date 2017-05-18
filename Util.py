@@ -1,36 +1,37 @@
-from subprocess import call
 import os
 import urllib
 import uuid
-from subprocess import Popen, check_output, PIPE
+
+from Log import *
+from subprocess import Popen, check_output, PIPE, call
 
 class Util(object):
     @staticmethod
     def compile_ccn_lite(clean=False):
-        print("")
+        Log.info("")
         wd = "$CCNL_HOME/src"
         src = os.path.expandvars(wd)
         if src == wd or not src:
-            print("$CCNL_HOME not set!")
+            Log.error("$CCNL_HOME not set!")
             return
-        print("Compiling ccn-lite.")
+        Log.info("Compiling ccn-lite.")
         cmd = "make clean all" if clean else "make all"
         call(cmd.split(" "), cwd=src)
-        print("Done.")
+        Log.info("Done.")
 
     @staticmethod
     def compile_nfn_scala(assembly=True, clean=False):
-        print("")
+        Log.info("")
         wd = "$NFNSCALA_HOME"
         src = os.path.expandvars(wd)
         if src == wd or not src:
-            print("$NFNSCALA_HOME not set!")
+            Log.error("$NFNSCALA_HOME not set!")
             return
-        print("Compiling nfn-scala.")
+        Log.info("Compiling nfn-scala.")
         cmd = "sbt clean" if clean else "sbt"
         cmd = cmd + (" assembly" if assembly else " compile")
         call(cmd.split(" "), cwd=src)
-        print("Done.")
+        Log.info("Done.")
 
     @staticmethod
     def clean_output_folder():
@@ -41,7 +42,7 @@ class Util(object):
                 if os.path.isfile(path):
                     os.unlink(path)
             except Exception as e:
-                print(e)
+                Log.error(e)
 
     @staticmethod
     def get_intermediate_index(interest):
@@ -77,14 +78,14 @@ class Util(object):
     @staticmethod
     def log_on_data(interest, data):
         content = data.getContent().toRawStr()
-        print("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
+        Log.info("Received data for interest '{}':\n{}".format(Util.interest_to_string(interest),
                                                             urllib.parse.unquote(content)))
 
     @staticmethod
     def ccnl_home():
         ccnl_home = os.path.expandvars("$CCNL_HOME").strip()
         if not ccnl_home or ccnl_home == "$CCNL_HOME":
-            print("$CCNL_HOME not set!")
+            Log.error("$CCNL_HOME not set!")
             return None
         return ccnl_home
 
@@ -92,7 +93,7 @@ class Util(object):
     def nfn_home():
         nfn_home = os.path.expandvars("$NFNSCALA_HOME").strip()
         if not nfn_home or nfn_home == "$NFNSCALA_HOME":
-            print("$NFNSCALA_HOME not set!")
+            Log.error("$NFNSCALA_HOME not set!")
             return None
         return nfn_home
 

@@ -1,5 +1,7 @@
-from Node import Node
 import os
+
+from Log import *
+from Node import Node
 from subprocess import Popen, check_output, PIPE
 from Config import *
 
@@ -12,7 +14,7 @@ class ComputeServer(Node):
         super().launch()
         scala_home = os.path.expandvars("$NFNSCALA_HOME").strip()
         if not scala_home or scala_home == "$NFNSCALA_HOME":
-            print("$NFNSCALA_HOME not set!")
+            Log.error("$NFNSCALA_HOME not set!")
             return
         jar = scala_home + "/target/scala-2.10/nfn-assembly-0.2.0.jar"
         command = ['java', '-jar', jar,
@@ -32,8 +34,8 @@ class ComputeServer(Node):
         #        self.nfn_node.prefix])
         # # command = ['sbt', arg]
 
-        print("Launching compute server " + self.description + " attached to " + self.nfn_node.description)
-        print("  " + " ".join(command))
+        Log.info("Launching compute server " + self.description + " attached to " + self.nfn_node.description)
+        Log.info("  " + " ".join(command))
 
         output_dir = './output'
         if not os.path.exists(output_dir):

@@ -1,6 +1,8 @@
+import time
+
+from Log import *
 from NFNNode import NFNNode
 from ComputeServer import ComputeServer
-import time
 
 
 class Network(object):
@@ -35,9 +37,9 @@ class SimpleNetwork(Network):
             self.nodes[i].add_forwarding_rule("/node" + str(self.n), self.nodes[i + 1])
 
         self.compute_servers.append(ComputeServer(port=9999, node=self.nodes[self.n-1], launch=True))
-        print("Waiting for compute server to launch.")
+        Log.info("Waiting for compute server to launch.")
         time.sleep(5)
-        print("")
+        Log.info("")
 
 class SerialNetwork(Network):
     def __init__(self, n):
@@ -56,9 +58,9 @@ class SerialNetwork(Network):
         for i in range(1, self.n + 1):
             self.compute_servers.append(ComputeServer(port=9990 + i, node=self.nodes[i - 1], launch=True))
 
-        print("Waiting for compute servers to launch.")
+        Log.info("Waiting for compute servers to launch.")
         time.sleep(5)
-        print("")
+        Log.info("")
 
 
 class ThesisNetwork(Network):
@@ -80,9 +82,9 @@ class ThesisNetwork(Network):
 
         self.compute_servers.append(ComputeServer(port=9994, node=self.nodes[s - 1], launch=True))
         self.compute_servers.append(ComputeServer(port=9996, node=self.nodes[n - 1], launch=True))
-        print("Waiting for compute server to launch.")
+        Log.info("Waiting for compute server to launch.")
         time.sleep(5)
-        print("")
+        Log.info("")
 
 
 class ForkNetwork(Network):
@@ -130,6 +132,6 @@ class ForkNetwork(Network):
                         branch[i].add_forwarding_rule(prefix, branch[i - 1])
                     branch[0].add_forwarding_rule(prefix, self.nodes[self.stem_length - 1])
 
-        print("Waiting for compute servers to launch.")
+        Log.info("Waiting for compute servers to launch.")
         time.sleep(5)
-        print("")
+        Log.info("")
