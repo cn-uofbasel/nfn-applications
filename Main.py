@@ -150,7 +150,7 @@ class PubSubTest(Test):
         self.msg = "/node6/PubSubMsg"
         self.msg_count = 0
     def setup(self):
-        self.network = SerialNetwork(6)
+        self.network = ThesisNetwork()
         identifier = "thread"
         #param = self.msg.replace("/", "%2F")
         name = self.broker + "/(@x call 2 x '" + identifier + "')/NFN"

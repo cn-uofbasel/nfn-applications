@@ -45,7 +45,7 @@ class Request(object):
         else:
             self.interest.setInterestLifetimeMilliseconds(1000 * self.timeout)
         self.node.face.expressInterest(self.interest, self.on_interest_data, self.on_interest_timeout)
-        print("Sent interest '{}'".format(self.name))
+        Log.info("Sent interest '{}'".format(self.name))
         if self.intermediate_interval > 0 and self.on_intermediate is not None:
             # self.cim_timer = QTimer()
             # self.cim_timer.timeout.connect(self.cim_timer_fired)

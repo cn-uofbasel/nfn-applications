@@ -28,7 +28,7 @@ def on_intermediate(request, index, data):
     content = data.getContent().toRawStr()
     print("New content (" + str(index) + "): " + content)
 
-# Log.level = LogLevel.Error
+Log.level = LogLevel.Warning
 
 
 
