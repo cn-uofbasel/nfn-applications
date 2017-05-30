@@ -1,5 +1,5 @@
 from Test import *
-from Log import *
+# from Log import *
 
 class TestSuite(object):
     def __init__(self, tests=[]):
@@ -19,7 +19,7 @@ class TestSuite(object):
                 count += 1
                 print(test.name + " passed.")
             else:
-                print("❗ " + test.name + " failed.")
+                print(test.name + " failed.")
         Log.info("-------------")
         Log.info(str(count) + "/" + str(len(self.tests)) + " tests passed.\n")
 

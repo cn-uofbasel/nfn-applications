@@ -1,47 +1,67 @@
-from Test import *
-from TestSuite import *
+# from TestSuite import *
+import sys
+import signal
 from Network import *
-from Util import *
-from Config import *
 from Request import *
 
-from IntermediateTest import IntermediateTest
-from NBodyTest import NBodyTest
-from SimulationRenderTest import SimulationRenderTest
-
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QTimer
-
 
 def sigint_handler(*args):
     QApplication.quit()
 
 def timer_fired():
+    # print("Process timer fired.")
+    # c = c + 1
     node.process_events()
 
-def on_intermediate(request, data):
+def on_intermediate(request, index, data):
     content = data.getContent().toRawStr()
-    print("New content: " + content)
+    print("New content (" + str(index) + "): " + content)
 
 # Log.level = LogLevel.Error
 
-node = NFNNode(9001, launch=False)
+
+
+default_broker = "/node4/nfn_service_PubSubBroker/"
+
+
+
+ask_node_input = input("Ask node [9001]: ").strip()
+broker = input("Broker prefix [" + default_broker + "]: ").strip()
+identifier = input("Thread ID [thread]: ").strip()
+
+if not ask_node_input:
+    ask_node_input = "9001"
+
+if not broker:
+    broker = default_broker
+
+if not identifier:
+    identifier = "thread"
+
+# print("ASK: (" + ask_node_input + ")")
+
+
+node = NFNNode(int(ask_node_input), launch=False)
 node.connect()
 
-broker = "/node4/nfn_service_PubSubBroker"
-msg = "/node6/PubSubMsg"
-param = msg.replace("/", "%2F")
-name = broker + "/(@x call 2 x '" + param + "')/NFN"
+name = broker + "(@x call 2 x '" + identifier + "')/NFN"
 
-app = QApplication(sys.argv)
-signal.signal(signal.SIGINT, sigint_handler)
+# test = input("Test: ")
 
-timer = QTimer()
-timer.timeout.connect(timer_fired)
-timer.start(1 * 1000)
+# app = QApplication(sys.argv)
+# signal.signal(signal.SIGINT, sigint_handler)
 
-Request(node, name, on_intermediate=on_intermediate).send()
+# timer = QTimer()
+# timer.timeout.connect(timer_fired)
+# timer.start(1 * 1000)
 
-app.exec_()
+request = Request(node, name, timeout=None, on_intermediate=on_intermediate)
+request.send()
+
+while True:
+    timer_fired()
+    time.sleep(1)
+# app.exec_()
 

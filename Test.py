@@ -1,12 +1,9 @@
 import sys
 import signal
-import asyncio
-from enum import Enum
 from Log import *
 
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QPixmap, QImage
 
 
 class TestResult(Enum):
@@ -115,7 +112,7 @@ class Test(object):
             Log.info("\nTest succeeded (" + self.name + ")\n")
             self.on_succeed()
         if result == TestResult.Failure:
-            Log.warn("\n❗ Test failed (" + self.name + ")\n")
+            Log.warn("\nTest failed (" + self.name + ")\n")
             self.on_fail()
 
         self.app.exit()

@@ -38,16 +38,25 @@ class Request(object):
             self.cim_name = self.cim_name[:-4] + "/R2C/CIM/NFN"
 
     def send(self):
-        self.interest.setInterestLifetimeMilliseconds(1000 * self.timeout)
+        if self.timeout is None:
+            self.interest.setInterestLifetimeMilliseconds(None)
+        else:
+            self.interest.setInterestLifetimeMilliseconds(1000 * self.timeout)
         self.node.face.expressInterest(self.interest, self.on_interest_data, self.on_interest_timeout)
         print("Sent interest '{}'".format(self.name))
         if self.intermediate_interval > 0 and self.on_intermediate is not None:
-            self.cim_timer = QTimer()
-            self.cim_timer.timeout.connect(self.cim_timer_fired)
-            self.cim_timer.start(self.intermediate_interval * 1000)
+            # self.cim_timer = QTimer()
+            # self.cim_timer.timeout.connect(self.cim_timer_fired)
+            # self.cim_timer.start(self.intermediate_interval * 1000)
+            self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
+
+    def send_later(self, delay):
+        QTimer.singleShot(delay * 1000, self.send)
 
     def cim_timer_fired(self):
+        # Log.info("CIM timer fired. Interval: " + str(self.intermediate_interval))
         Request(self.node, self.cim_name, timeout=self.intermediate_interval, on_data=self.on_cim_data).send()
+        self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
 
     def on_cim_data(self, request, data):
         content = data.getContent().toRawStr()
@@ -81,6 +90,7 @@ class Request(object):
         self.on_intermediate(self, index, data)
 
     def on_interest_data(self, interest, data):
+        #Log.info("INTEREST DATA")
         if self.cim_timer is not None:
             self.cim_timer.stop()
 

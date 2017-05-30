@@ -60,4 +60,4 @@ class NFNNode(Node):
         ctrl_path = ccnl_home + "/bin/ccn-lite-ctrl"
         command = [ctrl_path, '-x', self.mgmt, 'addContentToCache', path]
         check_output(command)
-        Log.info("Added content to cache of node " + self.description)
+        Log.info("Added content to cache of node " + self.description + " with name " + name)

@@ -132,6 +132,17 @@ class AddToCacheTest(Test):
         self.finish_with_result(TestResult.Success)
 
 
+class GetFromLocalCacheTest(Test):
+    def setup(self):
+        self.network = SimpleNetwork(4)
+        name = "/node4/nfn_service_ControlRequestTest/(@x call 2 x 'test')/NFN"
+        Request(self.network.nodes[0], name).send()
+        name = "/node4/nfn_service_ControlRequestTest/(@x call 2 x 'test')/R2C/CTRL 1/NFN"
+        Request(self.network.nodes[0], name).send_later(3)
+        name = "/node4/nfn_service_ControlRequestTest/(@x call 2 x 'test')/R2C/CTRL 3/NFN"
+        Request(self.network.nodes[0], name).send_later(5)
+
+
 class PubSubTest(Test):
     def __init__(self):
         super().__init__()
@@ -140,8 +151,9 @@ class PubSubTest(Test):
         self.msg_count = 0
     def setup(self):
         self.network = SerialNetwork(6)
-        param = self.msg.replace("/", "%2F")
-        name = self.broker + "/(@x call 2 x '" + param + "')/NFN"
+        identifier = "thread"
+        #param = self.msg.replace("/", "%2F")
+        name = self.broker + "/(@x call 2 x '" + identifier + "')/NFN"
         Request(self.network.nodes[0], name).send()
     # def update(self):
     #     name = self.msg + "/" + str(self.msg_count)
@@ -180,8 +192,20 @@ class PubSubTest(Test):
 # UITest().start()
 # SimulationRenderTest(enable_ui=True).start()
 # AddToCacheTest().start()
+# GetFromLocalCacheTest().start()
 PubSubTest().start()
 
 # Util.clean_output_folder()
 
 # Util.write_binary_content("/node6/PubSubMsg/0", "testdata".encode())
+
+
+# node = NFNNode(9004, launch=False)
+# node.connect()
+# broker = "/node4/nfn_service_PubSubBroker"
+# msg = "/node6/PubSubMsg"
+# param = msg.replace("/", "%2F")
+# name = broker + "/(@x call 2 x '" + param + "')/NFN"
+# Request(node, name).send()
+
+
