@@ -1,13 +1,14 @@
-import asyncio
-import urllib
-import atexit
-import socket
+# import asyncio
+# import urllib
+# import atexit
+# import socket
+import threading
 
-from Log import *
+# from Log import *
 from Util import *
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QPixmap, QImage
+# from PyQt5.QtWidgets import QApplication, QWidget, QLabel
+# from PyQt5.QtCore import QTimer
+# from PyQt5.QtGui import QPixmap, QImage
 
 from pyndn import Name, Interest, Blob, Data
 
@@ -19,6 +20,7 @@ class Request(object):
         self.interest = Interest(Name(name))
         self.timeout = timeout
         self.intermediate_interval = intermediate_interval
+        self.later_timer = None
 
         self.on_data = on_data if on_data is not None else self.on_data_fallback
         self.on_timeout = on_timeout if on_timeout is not None else self.on_timeout_fallback
@@ -48,15 +50,27 @@ class Request(object):
             # self.cim_timer = QTimer()
             # self.cim_timer.timeout.connect(self.cim_timer_fired)
             # self.cim_timer.start(self.intermediate_interval * 1000)
-            self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
+            # self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
+            self.cim_timer = threading.Timer(self.intermediate_interval, self.cim_timer_fired)
+            self.cim_timer.start()
 
     def send_later(self, delay):
-        QTimer.singleShot(delay * 1000, self.send)
+        # QTimer.singleShot(delay * 1000, self.send)
+        self.later_timer = threading.Timer(delay, self.send)
+        self.later_timer.start()
+
+    def cancel(self):
+        if self.later_timer is not None:
+            self.later_timer.cancel()
+        if self.cim_timer is not None:
+            self.cim_timer.cancel()
 
     def cim_timer_fired(self):
         # Log.info("CIM timer fired. Interval: " + str(self.intermediate_interval))
         Request(self.node, self.cim_name, timeout=self.intermediate_interval, on_data=self.on_cim_data).send()
-        self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
+        self.cim_timer = threading.Timer(self.intermediate_interval, self.cim_timer_fired)
+        self.cim_timer.start()
+        # self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
 
     def on_cim_data(self, request, data):
         content = data.getContent().toRawStr()
@@ -92,7 +106,7 @@ class Request(object):
     def on_interest_data(self, interest, data):
         #Log.info("INTEREST DATA")
         if self.cim_timer is not None:
-            self.cim_timer.stop()
+            self.cim_timer.cancel()
 
         content = data.getContent().toRawStr()
         redirectPrefix = "redirect:"

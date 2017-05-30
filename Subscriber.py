@@ -1,19 +1,28 @@
 # from TestSuite import *
 import sys
 import signal
+import threading
 from Network import *
 from Request import *
 
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QTimer
+# from PyQt5.QtWidgets import QApplication
+# from PyQt5.QtCore import QTimer
 
 def sigint_handler(*args):
-    QApplication.quit()
+    global timer
+    global request
+    if timer is not None:
+        timer.cancel()
+    if request is not None:
+        request.cancel()
 
 def timer_fired():
+    global timer
     # print("Process timer fired.")
     # c = c + 1
     node.process_events()
+    timer = threading.Timer(1, timer_fired)
+    timer.start()
 
 def on_intermediate(request, index, data):
     content = data.getContent().toRawStr()
@@ -51,7 +60,7 @@ name = broker + "(@x call 2 x '" + identifier + "')/NFN"
 # test = input("Test: ")
 
 # app = QApplication(sys.argv)
-# signal.signal(signal.SIGINT, sigint_handler)
+signal.signal(signal.SIGINT, sigint_handler)
 
 # timer = QTimer()
 # timer.timeout.connect(timer_fired)
@@ -60,8 +69,13 @@ name = broker + "(@x call 2 x '" + identifier + "')/NFN"
 request = Request(node, name, timeout=None, on_intermediate=on_intermediate)
 request.send()
 
-while True:
-    timer_fired()
-    time.sleep(1)
+timer = threading.Timer(1, timer_fired)
+timer.start()
+
 # app.exec_()
+
+# while True:
+#     timer_fired()
+#     time.sleep(1)
+
 
