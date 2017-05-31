@@ -135,3 +135,51 @@ class ForkNetwork(Network):
         Log.info("Waiting for compute servers to launch.")
         time.sleep(5)
         Log.info("")
+
+class StarNetwork(Network):
+    def __init__(self, spoke_count, spoke_length, server_on_hub=True, server_on_spokes=True):
+        super().__init__()
+        self.spoke_count = spoke_count
+        self.spoke_length = spoke_length
+        self.server_on_hub = server_on_hub
+        self.server_on_spokes = server_on_spokes
+        self.spokes = []
+        self.hub = None
+        self.setup()
+
+    def setup(self):
+        # launch hub
+        self.hub = NFNNode(port=9000, prefix='/hub', launch=True)
+        self.nodes.append(self.hub)
+        if self.server_on_hub:
+            server = ComputeServer(port=9999, node=self.hub, launch=True)
+            self.compute_servers.append(server)
+
+        for s in range(0, self.spoke_count):
+
+            # launch the nodes of the current branch
+            branch = []
+            for n in range(0, self.spoke_length):
+                node = NFNNode(port=9000+(s+1)*100+n+1, prefix='/hub/branch'+str(s+1)+'/node'+str(n+1), launch=True)
+                branch.append(node)
+            self.nodes.extend(branch)
+
+            # launch compute server at the end of the branch
+            if self.server_on_spokes:
+                server = ComputeServer(port=9000+(s+1)*100+99, node=branch[self.spoke_length], launch=True)
+                self.compute_servers.append(server)
+
+            # setup forwarding rules in the current branch that forward packets from the center to the compute server
+            self.hub.add_forwarding_rule('/hub/branch'+str(s+1)+'/node'+str(self.spoke_length), branch[0])
+            for n in range(0, self.spoke_length - 1):
+                branch[n].add_forwarding_rule('/hub/branch'+str(s+1)+'/node'+str(self.spoke_length), branch[n + 1])
+
+            # setup forwarding rules that forward packets from the current branch to the center of the network
+            branch[0].add_forwarding_rule('/hub', self.hub)
+            for n in range(1, self.spoke_length):
+                branch[n].add_forwarding_rule('/hub', branch[n - 1])
+
+        Log.info("Waiting for compute servers to launch.")
+        time.sleep(10)
+        Log.info("")
+

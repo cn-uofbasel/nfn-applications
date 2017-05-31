@@ -5,14 +5,6 @@ from Util import *
 from Config import *
 from Request import *
 
-from IntermediateTest import IntermediateTest
-from NBodyTest import NBodyTest
-from SimulationRenderTest import SimulationRenderTest
-
-import sys
-from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5.QtCore import QTimer
-
 
 class SimpleTest(Test):
     def setup(self):
@@ -144,16 +136,11 @@ class GetFromLocalCacheTest(Test):
 
 
 class PubSubTest(Test):
-    def __init__(self):
-        super().__init__()
-        self.broker = "/node4/nfn_service_PubSubBroker"
-        self.msg = "/node6/PubSubMsg"
-        self.msg_count = 0
     def setup(self):
+        broker = "/node4/nfn_service_PubSubBroker"
         self.network = ThesisNetwork()
         identifier = "thread"
-        #param = self.msg.replace("/", "%2F")
-        name = self.broker + "/(@x call 2 x '" + identifier + "')/NFN"
+        name = broker + "/(@x call 2 x '" + identifier + "')/NFN"
         Request(self.network.nodes[0], name).send()
     # def update(self):
     #     name = self.msg + "/" + str(self.msg_count)
@@ -165,6 +152,10 @@ class PubSubTest(Test):
     # def on_data(self, request, data):
     #     self.finish_with_result(TestResult.Success)
 
+
+class MobileServerTest(Test):
+    def setup(self):
+        self.network = StarNetwork(4, 2)
 
 
 
@@ -195,7 +186,8 @@ class PubSubTest(Test):
 # SimulationRenderTest(enable_ui=True).start()
 # AddToCacheTest().start()
 # GetFromLocalCacheTest().start()
-PubSubTest().start()
+# PubSubTest().start()
+MobileServerTest().start()
 
 # Util.clean_output_folder()
 
