@@ -19,4 +19,6 @@ class NFNLogLevel(Enum):
 class Config(object):
     ccn_log_level = CCNLogLevel.Trace
     nfn_log_level = NFNLogLevel.Debug
+    output_path = "./Output"
+    temp_path = "./temp"
 

@@ -1,11 +1,7 @@
-import sys
 import signal
 import threading
 
-from Log import *
-
-# from PyQt5.QtWidgets import QApplication
-# from PyQt5.QtCore import QTimer
+from Util.Log import *
 
 
 class TestResult(Enum):
@@ -82,28 +78,6 @@ class Test(object):
                 self.timeout_timer = threading.Timer(self.max_duration, self.timeout_timer_fired)
                 self.timeout_timer.start()
 
-            # self.events_timer = QTimer()
-            # self.events_timer.timeout.connect(self.events_timer_fired)
-            # self.events_timer.start(self.process_interval * 1000)
-            #
-            # self.update_timer = QTimer()
-            # self.update_timer.timeout.connect(self.update_timer_fired)
-            # self.update_timer.start(self.update_interval * 1000)
-            #
-            # if self.max_duration > 0:
-            #     self.timeout_timer = QTimer()
-            #     self.timeout_timer.timeout.connect(self.timeout_timer_fired)
-            #     self.timeout_timer.start(self.max_duration * 1000)
-
-            # self.app.exec_()
-
-            # if self.use_event_loop:
-            # self.loop = asyncio.get_event_loop()
-            # self.process_handle = self.loop.call_soon(self.process_events)
-            # self.update_handle = self.loop.call_later(self.update_interval, self.process_update)
-            # if self.max_duration > 0:
-            #     self.timeout_handle = self.loop.call_later(self.max_duration, self.test_timeout)
-            # self.loop.run_forever()
 
         except (KeyboardInterrupt, SystemExit):
             Log.error("\nAborting.")

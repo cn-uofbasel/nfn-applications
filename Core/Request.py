@@ -1,16 +1,9 @@
-# import asyncio
-# import urllib
-# import atexit
-# import socket
+
 import threading
 
-# from Log import *
-from Util import *
-# from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-# from PyQt5.QtCore import QTimer
-# from PyQt5.QtGui import QPixmap, QImage
-
 from pyndn import Name, Interest, Blob, Data
+
+from Util.Util import *
 
 class Request(object):
     def __init__(self, node, name, timeout=30, intermediate_interval=1, on_data=None, on_timeout=None, on_intermediate=None):

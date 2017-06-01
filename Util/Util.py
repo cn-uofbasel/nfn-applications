@@ -1,9 +1,11 @@
 import os
 import urllib
 import uuid
+from subprocess import Popen, PIPE, call
 
-from Log import *
-from subprocess import Popen, check_output, PIPE, call
+from Core.Config import *
+from Util.Log import *
+
 
 class Util(object):
     @staticmethod
@@ -35,7 +37,7 @@ class Util(object):
 
     @staticmethod
     def clean_output_folder():
-        folder = './output'
+        folder = Config.output_path
         for file in os.listdir(folder):
             path = os.path.join(folder, file)
             try:

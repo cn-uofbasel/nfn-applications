@@ -1,9 +1,10 @@
 import os
+from subprocess import Popen
 
-from Log import *
-from Node import Node
-from subprocess import Popen, check_output, PIPE
-from Config import *
+from Core.Config import *
+from Core.Node import Node
+from Util.Log import *
+
 
 class ComputeServer(Node):
     def __init__(self, port, node, launch=False):
@@ -37,10 +38,10 @@ class ComputeServer(Node):
         Log.info("Launching compute server " + self.description + " attached to " + self.nfn_node.description)
         Log.info("  " + " ".join(command))
 
-        output_dir = './output'
+        output_dir = Config.output_path
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        with open('./output/' + str(self.port) + '.log', 'wb') as out:
+        with open(Config.output_path + '/' + str(self.port) + '.log', 'wb') as out:
             self.process = Popen(command, cwd=scala_home, stdout=out, stderr=out)
 
 

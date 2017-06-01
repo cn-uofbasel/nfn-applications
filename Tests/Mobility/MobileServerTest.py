@@ -1,9 +1,9 @@
-from TestSuite import *
-from Network import *
-from Request import *
-from LoremIpsum import *
-
 from random import randint
+
+from Core.Network import *
+from Core.Request import *
+from Core.TestSuite import *
+from Util.LoremIpsum import *
 
 
 class MobileServerTest(Test):

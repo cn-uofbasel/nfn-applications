@@ -1,12 +1,10 @@
-import asyncio
-import urllib
 import atexit
 import socket
-from Util import *
 
-from Log import *
-from pyndn import Name, Interest, Face
+from pyndn import Face
 from pyndn.transport.udp_transport import UdpTransport
+
+from Util.Log import *
 
 
 class Node(object):

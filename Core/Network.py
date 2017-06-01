@@ -1,8 +1,8 @@
 import time
 
-from Log import *
-from NFNNode import NFNNode
-from ComputeServer import ComputeServer
+from Core.ComputeServer import ComputeServer
+from Core.NFNNode import NFNNode
+from Util.Log import *
 
 
 class Network(object):

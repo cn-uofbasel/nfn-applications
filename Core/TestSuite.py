@@ -1,5 +1,5 @@
-from Test import *
-# from Log import *
+from Core.Test import *
+
 
 class TestSuite(object):
     def __init__(self, tests=[]):

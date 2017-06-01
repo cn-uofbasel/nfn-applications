@@ -1,11 +1,5 @@
-import os
-import uuid
-
-from Log import *
-from Util import *
-from Config import *
-from Node import Node
-from subprocess import Popen, check_output, PIPE
+from Core.Node import Node
+from Util.Util import *
 
 
 class NFNNode(Node):
@@ -19,10 +13,10 @@ class NFNNode(Node):
         super().launch()
         relay = os.path.expandvars("$CCNL_HOME/bin/ccn-nfn-relay")
         command = [relay, '-v', Config.ccn_log_level.value, '-u', str(self.port), '-x', self.mgmt]
-        output_dir = './output'
+        output_dir = Config.output_path
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        with open('./output/' + str(self.port) + '.log', 'wb') as out:
+        with open(Config.output_path + '/' + str(self.port) + '.log', 'wb') as out:
             self.process = Popen(command, stdout=out, stderr=out)
         Log.info("Launched node " + self.description + " " + self.prefix)
 

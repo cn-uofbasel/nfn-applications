@@ -1,12 +1,8 @@
-# from TestSuite import *
-import sys
 import signal
-import threading
-from Network import *
-from Request import *
 
-# from PyQt5.QtWidgets import QApplication
-# from PyQt5.QtCore import QTimer
+from Core.Network import *
+from Core.Request import *
+
 
 def sigint_handler(*args):
     global timer

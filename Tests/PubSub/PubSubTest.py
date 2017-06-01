@@ -1,6 +1,6 @@
-from TestSuite import *
-from Network import *
-from Request import *
+from Core.Network import *
+from Core.Request import *
+from Core.TestSuite import *
 
 
 class PubSubTest(Test):

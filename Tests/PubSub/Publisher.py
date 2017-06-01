@@ -1,9 +1,7 @@
 import sys
-import signal
 
-from Network import *
-from Request import *
-
+from Core.Network import *
+from Core.Request import *
 
 Log.level = LogLevel.Warning
 

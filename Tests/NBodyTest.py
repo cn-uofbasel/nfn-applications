@@ -1,8 +1,10 @@
-from Test import Test
-from Network import *
 import io
 import urllib
+
 from PIL import Image
+
+from Core.Network import *
+from Core.Test import Test
 
 
 class NBodyTest(Test):

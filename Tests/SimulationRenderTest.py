@@ -1,11 +1,11 @@
 
-from Network import *
-from Test import *
-from Request import *
-from PIL import Image, ImageTk
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtWidgets import QWidget, QLabel
+
+from Core.Network import *
+from Core.Request import *
+from Core.Test import *
+
 
 class SimulationRenderTest(Test):
     def __init__(self, enable_ui=False):
@@ -33,7 +33,11 @@ class SimulationRenderTest(Test):
     def on_intermediate(self, request, index, data):
         img_bytes = data.getContent().toBytes()
 
-        img_file = open("./output/nbody/" + str(index) + ".png", "wb")
+        nbody_folder = Config.output_path + "/nbody"
+        if not os.path.exists(nbody_folder):
+            os.makedirs(nbody_folder)
+
+        img_file = open(nbody_folder + "/" + str(index) + ".png", "wb")
         img_file.write(bytearray(img_bytes))
 
         # img = Image.open(io.BytesIO(img_bytes))

@@ -1,6 +1,6 @@
-from Network import *
-from Test import *
-from Util import *
+from Core.Network import *
+from Core.Test import *
+from Util.Util import *
 
 
 class IntermediateTest(Test):
