@@ -1,10 +1,11 @@
 
-from Tests import *
+from Tests.Tests import *
+from Tests.NBodyTest import *
+from Tests.IntermediateTest import *
+from Tests.SimulationRenderTest import *
+from Tests.PubSub.PubSubTest import *
+from Tests.Mobility.MobileServerTest import *
 
-from PubSubTest import *
-from MobileServerTest import *
-
-# from Tests.Tests import *
 # import Tests.ChainTest
 
 # Util.compile_ccn_lite()
@@ -34,8 +35,8 @@ from MobileServerTest import *
 # SimulationRenderTest(enable_ui=True).start()
 # AddToCacheTest().start()
 # GetFromLocalCacheTest().start()
-PubSubTest().start()
-# MobileServerTest().start()
+# PubSubTest().start()
+MobileServerTest().start()
 
 # Util.clean_output_folder()
 
