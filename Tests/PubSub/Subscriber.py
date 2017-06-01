@@ -14,8 +14,6 @@ def sigint_handler(*args):
 
 def timer_fired():
     global timer
-    # print("Process timer fired.")
-    # c = c + 1
     node.process_events()
     timer = threading.Timer(1, timer_fired)
     timer.start()
@@ -27,10 +25,7 @@ def on_intermediate(request, index, data):
 Log.level = LogLevel.Warning
 
 
-
 default_broker = "/node4/nfn_service_PubSubBroker/"
-
-
 
 ask_node_input = input("Ask node [9001]: ").strip()
 broker = input("Broker prefix [" + default_broker + "]: ").strip()
@@ -45,33 +40,19 @@ if not broker:
 if not identifier:
     identifier = "thread"
 
-# print("ASK: (" + ask_node_input + ")")
-
 
 node = NFNNode(int(ask_node_input), launch=False)
 node.connect()
 
 name = broker + "(@x call 2 x '" + identifier + "')/NFN"
 
-# test = input("Test: ")
 
-# app = QApplication(sys.argv)
 signal.signal(signal.SIGINT, sigint_handler)
-
-# timer = QTimer()
-# timer.timeout.connect(timer_fired)
-# timer.start(1 * 1000)
 
 request = Request(node, name, timeout=None, on_intermediate=on_intermediate)
 request.send()
 
 timer = threading.Timer(1, timer_fired)
 timer.start()
-
-# app.exec_()
-
-# while True:
-#     timer_fired()
-#     time.sleep(1)
 
 

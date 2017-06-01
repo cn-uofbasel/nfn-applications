@@ -26,15 +26,6 @@ class ComputeServer(Node):
                    '--ccnl-already-running',
                    self.nfn_node.prefix]
 
-        # arg = " ".join(['runMain', 'runnables.production.ComputeServerStarter',
-        #        '--mgmtsocket', self.nfn_node.mgmt,
-        #        '--ccnl-port', str(self.nfn_node.port),
-        #        '--cs-port', str(self.port),
-        #        '--debug',
-        #        '--ccnl-already-running',
-        #        self.nfn_node.prefix])
-        # # command = ['sbt', arg]
-
         Log.info("Launching compute server " + self.description + " attached to " + self.nfn_node.description)
         Log.info("  " + " ".join(command))
 

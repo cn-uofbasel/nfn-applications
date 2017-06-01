@@ -27,7 +27,6 @@ try:
         new_prefix = new_prefix.replace("/", "%2F")
         identifier = "test"
         name = waypoint_prefix + "/(@x call 2 x '" + identifier + "')/R2C/CTRL " + new_prefix + "/NFN"
-        # name = "/hub/lol/what"
         request = Request(node, name).send()
 
 except (KeyboardInterrupt, SystemExit):

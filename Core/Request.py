@@ -40,15 +40,10 @@ class Request(object):
         self.node.face.expressInterest(self.interest, self.on_interest_data, self.on_interest_timeout)
         Log.info("Sent interest '{}'".format(self.name))
         if self.intermediate_interval > 0 and self.on_intermediate is not None:
-            # self.cim_timer = QTimer()
-            # self.cim_timer.timeout.connect(self.cim_timer_fired)
-            # self.cim_timer.start(self.intermediate_interval * 1000)
-            # self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
             self.cim_timer = threading.Timer(self.intermediate_interval, self.cim_timer_fired)
             self.cim_timer.start()
 
     def send_later(self, delay):
-        # QTimer.singleShot(delay * 1000, self.send)
         self.later_timer = threading.Timer(delay, self.send)
         self.later_timer.start()
 
@@ -59,11 +54,9 @@ class Request(object):
             self.cim_timer.cancel()
 
     def cim_timer_fired(self):
-        # Log.info("CIM timer fired. Interval: " + str(self.intermediate_interval))
         Request(self.node, self.cim_name, timeout=self.intermediate_interval, on_data=self.on_cim_data).send()
         self.cim_timer = threading.Timer(self.intermediate_interval, self.cim_timer_fired)
         self.cim_timer.start()
-        # self.cim_timer = QTimer.singleShot(self.intermediate_interval * 1000, self.cim_timer_fired)
 
     def on_cim_data(self, request, data):
         content = data.getContent().toRawStr()
@@ -71,7 +64,6 @@ class Request(object):
             Log.info("No intermediate results available yet.")
             return
         highest_available = int(content)
-        # print("Highest available intermediate: " + str(highest_available))
         for i in range(self.highest_gim_sent + 1, highest_available + 1):
             self.request_intermediate(i)
         self.highest_gim_sent = highest_available
@@ -97,7 +89,6 @@ class Request(object):
         self.on_intermediate(self, index, data)
 
     def on_interest_data(self, interest, data):
-        #Log.info("INTEREST DATA")
         if self.cim_timer is not None:
             self.cim_timer.cancel()
 
