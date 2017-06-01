@@ -37,7 +37,6 @@ class MobileServerTest(Test):
         self.timer.start()
 
     def send_interest(self):
-        print("Sending interest!!!")
         word_count = randint(1, LoremIpsum.max_length - 1)
         words = LoremIpsum.random_words(word_count)
         name = self.current_prefix + "(@x call 2 x '" + words + "')/NFN"

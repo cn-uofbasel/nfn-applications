@@ -34,8 +34,8 @@ from MobileServerTest import *
 # SimulationRenderTest(enable_ui=True).start()
 # AddToCacheTest().start()
 # GetFromLocalCacheTest().start()
-# PubSubTest().start()
-MobileServerTest().start()
+PubSubTest().start()
+# MobileServerTest().start()
 
 # Util.clean_output_folder()
 
