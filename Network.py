@@ -163,10 +163,11 @@ class StarNetwork(Network):
                 node = NFNNode(port=9000+(s+1)*100+n+1, prefix='/hub/branch'+str(s+1)+'/node'+str(n+1), launch=True)
                 branch.append(node)
             self.nodes.extend(branch)
+            self.spokes.append(branch)
 
             # launch compute server at the end of the branch
             if self.server_on_spokes:
-                server = ComputeServer(port=9000+(s+1)*100+99, node=branch[self.spoke_length], launch=True)
+                server = ComputeServer(port=9000+(s+1)*100+99, node=branch[self.spoke_length - 1], launch=True)
                 self.compute_servers.append(server)
 
             # setup forwarding rules in the current branch that forward packets from the center to the compute server
