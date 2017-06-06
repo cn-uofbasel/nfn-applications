@@ -42,13 +42,3 @@ MobileServerTest().start()
 
 # Util.write_binary_content("/node6/PubSubMsg/0", "testdata".encode())
 
-
-# node = NFNNode(9004, launch=False)
-# node.connect()
-# broker = "/node4/nfn_service_PubSubBroker"
-# msg = "/node6/PubSubMsg"
-# param = msg.replace("/", "%2F")
-# name = broker + "/(@x call 2 x '" + param + "')/NFN"
-# Request(node, name).send()
-
-

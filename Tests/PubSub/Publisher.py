@@ -37,6 +37,10 @@ try:
     publishNode = NFNNode(int(publish_node_input), launch=False)
     publishNode.connect()
 
+    print("Starting PubSub broker service.")
+    notification = broker + "(@x call 2 x '" + identifier + "')/NFN"
+    Request(firstNode, notification).send()
+
     print()
     print("Enter content to publish:")
 
